@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
 public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
+    private final JMenuBar menuBar = new JMenuBar();
     private final JButton buttonStart = new JButton("Start");
     private final JButton CurrentDate = new JButton("Current Date");
     private final JButton InputQuestion = new JButton("Would you like to use the Current Date or Input a Date:");
@@ -60,8 +61,18 @@ public class LogReader extends JPanel implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(textArea);
         
         
-        buttonStart.addActionListener(this);
-
+        //buttonStart.addActionListener(this);
+        
+         //Build File menu
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem startMenuItem = new JMenuItem("Start Program");
+        startMenuItem.addActionListener(this);
+        JMenuItem dateMenuItem = new JMenuItem("Set Date");
+        fileMenu.add(startMenuItem);
+        fileMenu.add(dateMenuItem);
+      
+        //add menus to menubar
+        menuBar.add(fileMenu);
         
         
         //Add Components to this panel.
@@ -70,6 +81,7 @@ public class LogReader extends JPanel implements ActionListener {
         c.gridwidth = GridBagConstraints.REMAINDER;
         d.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
+        add(menuBar);
         add(InputQuestion,c);
         add(CurrentDate,d);
         add(InputDate,d);
@@ -198,4 +210,5 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
+
 
