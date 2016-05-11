@@ -6,7 +6,7 @@
  */
 
 // Below are all the import that are used throughout this code as well as the package import.
-package textdemo;
+package logreader;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 
 
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
-public class TextDemo extends JPanel implements ActionListener {
+public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JButton buttonStart = new JButton("Start");
     private final JButton CurrentDate = new JButton("Current Date");
@@ -43,22 +43,25 @@ public class TextDemo extends JPanel implements ActionListener {
     protected JTextArea textArea;
     private final static String newline = "\n";
     private String File_Name_0;
-    private boolean start_true;
+    private int lineCount= 0;
+    private int newLineCount= 0;
+    private int delay = 36*1000; //1 min(s)
+    private Timer timer = new Timer(delay, this);
+    
     
  
     // This class, "TextDemo" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
     // Date (Returns the current date), Input Date (Returns user input date), and Start (Starts the log).
-    public TextDemo() {
+    public LogReader() {
         super(new GridBagLayout());
         textArea = new JTextArea(30, 65);
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
         
-        int delay = 100000; //millisecond
         buttonStart.addActionListener(this);
-        new Timer(delay, this).start();
+
         
         
         //Add Components to this panel.
@@ -90,7 +93,7 @@ public class TextDemo extends JPanel implements ActionListener {
               
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
-                start_true = true;
+
             }
         });
         CurrentDate.addActionListener(new ActionListener() {
@@ -101,7 +104,7 @@ public class TextDemo extends JPanel implements ActionListener {
                 int year = calendar.get(Calendar.YEAR);
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
-                start_true = true;
+
             }
         });
     }
@@ -111,16 +114,17 @@ public class TextDemo extends JPanel implements ActionListener {
     // searches for the given days log and tries to input the log into the text area window. If the log does not exist, it displays an error message saying
     // so. Also displayed is the time the log was put onto the screen as well as the number of lines.
     public void actionPerformed(ActionEvent evt) {
-        FileInputStream fis = null;
+        InputStream fis = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        String line = null;
         int i = 0;
-        char c;
       
         
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        textArea.append(newline+"Last time updated 1: " + dateFormat.format(date)+newline);
-          
+               
         
         File f = new File(File_Name_0);
         if(!f.isFile()){
@@ -129,27 +133,38 @@ public class TextDemo extends JPanel implements ActionListener {
         else{
             try{
                 fis = new FileInputStream(File_Name_0);
-                while((i=fis.read())!=-1){              
-                    c=(char)i;
-                    String log = Character.toString(c);
-                    textArea.append(log);
-                    //textArea.setCaretPosition(textArea.getDocument().getLength());
+                isr = new InputStreamReader(fis);
+                br = new BufferedReader(new FileReader(File_Name_0));
+                LineNumberReader reader = new LineNumberReader(br);
+
+                while((i=fis.read())!=-1){
+                   line = reader.readLine();
+                   lineCount=reader.getLineNumber();
+
+                    if(line==null || lineCount<=newLineCount){
+                        
+                    timer.start();
+                    reader.setLineNumber(lineCount);
+                    
+                    }else{
+
+                       textArea.append(line+newline);
+                       newLineCount=lineCount;
                     }
+                }
+                
             }catch(Exception ex){
-                ex.printStackTrace();
             }finally{
                 if(fis!=null)
-                    try{
+                    try {
                         fis.close();
-                    }catch(IOException ex){
-                        Logger.getLogger(TextDemo.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         
-        
-        textArea.append(newline+"Last time updated 2: " + dateFormat.format(date));
-        textArea.append("Line count: "+textArea.getLineCount());
+        textArea.append(newline+"Last time updated: " + dateFormat.format(date)+newline);
         //Code ends here
     }
  
@@ -163,7 +178,7 @@ public class TextDemo extends JPanel implements ActionListener {
  
         
         //Add contents to the window.
-        frame.add(new TextDemo());
+        frame.add(new LogReader());
  
         
         //Display the window.
@@ -183,3 +198,4 @@ public class TextDemo extends JPanel implements ActionListener {
         });
     }
 }
+
