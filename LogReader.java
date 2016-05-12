@@ -39,7 +39,6 @@ import javax.swing.JPanel;
 public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
-    private final JButton InputDate = new JButton("Input Date");
     protected JTextArea textArea;
     
     //Labels and default values for user to input the date of log
@@ -77,6 +76,8 @@ public class LogReader extends JPanel implements ActionListener {
     static final int INT_min = 0;
     static final int INT_max = 60;
     static final int INT_init = 30;
+    
+    private String logType;
     
  
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
@@ -129,21 +130,6 @@ public class LogReader extends JPanel implements ActionListener {
         fieldPane.add(setDay);
        
         
-        
-        
-        
-         //Build File menu
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem startMenuItem = new JMenuItem("Start Program");
-        startMenuItem.addActionListener(this);
-        JMenuItem dateMenuItem = new JMenuItem("Set Date");
-        
-        fileMenu.add(startMenuItem);
-        fileMenu.add(dateMenuItem);
-      
-        //add menus to menubar
-        menuBar.add(fileMenu);
-        
         JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
         //timer_slider.addChangeListener((ChangeListener) this);
         //Turn on labels at major tick marks.
@@ -153,28 +139,48 @@ public class LogReader extends JPanel implements ActionListener {
         timer_slider.setPaintLabels(true);
         
         
-        //Add Components to this panel.
-        GridBagConstraints c = new GridBagConstraints();
-        GridBagConstraints d = new GridBagConstraints();
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        d.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        add(menuBar,c);
-        add(InputDate,d);
-        add(timer_slider, c);
-        //add(buttonStart,c);
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-        add(scrollPane, c);
-        
-                //Put the above panels into a unified panel
-        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        add(labelPane);
-        add(fieldPane);
-           
- 
-        InputDate.addActionListener(new ActionListener() {
+         //Build File menu
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem startMenuItem = new JMenuItem("Start Program");
+        startMenuItem.addActionListener(this);
+        JMenuItem InputDate = new JMenuItem("Set Date");
+        //In initialization code:
+        //Create the radio buttons.
+        JRadioButton functionLog = new JRadioButton("Function Log");
+        functionLog.setMnemonic(KeyEvent.VK_A);
+        functionLog.setActionCommand("function Log");
+        JRadioButton projectBridgeLog = new JRadioButton("Project Bridge Log");
+        projectBridgeLog.setMnemonic(KeyEvent.VK_B);
+        projectBridgeLog.setActionCommand("Project Bridge Log");
+        JRadioButton prosightLog = new JRadioButton("Prosight Log");
+        prosightLog.setMnemonic(KeyEvent.VK_C);
+        prosightLog.setActionCommand("Prosight Log");
+        ButtonGroup group = new ButtonGroup();
+        group.add(functionLog);
+        group.add(projectBridgeLog);
+        group.add(prosightLog);
+        //Register a listener for the radio buttons.
+        functionLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "function";
+                textArea.append("The Log Type is now set to retrive the Function Log" + newline);
+            }
+        });  
+        //Register a listener for the radio buttons.
+        projectBridgeLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "ProjectBridge";
+                textArea.append("The Log Type is now set to retrive the Project Bridge Log" + newline);
+            }
+        });
+        //Register a listener for the radio buttons.
+        prosightLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "prosight";
+                textArea.append("The Log Type is now set to retrive the Prosight Log" + newline);
+            }
+        });
+         InputDate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Scanner reader = new Scanner(System.in);
                 System.out.println("Enter a month (mm): ");
@@ -185,7 +191,7 @@ public class LogReader extends JPanel implements ActionListener {
                 int year = reader.nextInt();
                 delay = ((int)timer_slider.getValue())*100*60;
                 textArea.append(newline + String.format("%02d", delay) + newline);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 timer.setDelay(delay);
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
             }
@@ -196,14 +202,56 @@ public class LogReader extends JPanel implements ActionListener {
                 int day = calendar.get(Calendar.DATE);
                 int month = calendar.get(Calendar.MONTH) + 1;
                 int year = calendar.get(Calendar.YEAR);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
                 delay = ((int)timer_slider.getValue())*1000*60;
                 timer.setDelay(delay);
-                //textArea.append(newline + String.format("%02d", delay) + newline);
-
             }
         });
+        //Build Clear Menu
+        JMenu clearField = new JMenu("Clear");
+        JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
+        JMenuItem clearAllItem = new JMenuItem("Clear Text and Close");
+        clearTextItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(null);
+            }
+        });
+        clearAllItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(null);
+                System.exit(0);
+            }
+        });
+        //add menus to menubar
+        fileMenu.add(InputDate);
+        fileMenu.add(startMenuItem);
+        fileMenu.add(functionLog);
+        fileMenu.add(projectBridgeLog);
+        fileMenu.add(prosightLog); 
+        clearField.add(clearTextItem);
+        clearField.add(clearAllItem);
+        menuBar.add(fileMenu);
+        menuBar.add(clearField);
+
+        
+        //Add Components to this panel.
+        GridBagConstraints c = new GridBagConstraints();
+        GridBagConstraints d = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        d.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        add(menuBar,c);
+        //add(InputDate,d);
+        add(timer_slider, c);
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        add(scrollPane, c); 
+        //Put the above panels into a unified panel
+        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        add(labelPane);
+        add(fieldPane);
     }
  
     
@@ -297,4 +345,3 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
-
