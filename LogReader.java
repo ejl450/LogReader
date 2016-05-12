@@ -40,32 +40,7 @@ public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
     protected JTextArea textArea;
-    
-    //Labels and default values for user to input the date of log
-    private JLabel yearLabel;
-    private JLabel monthLabel;
-    private JLabel dayLabel;
-    private int defaultYear = 2016;
-    private int defaultMonth = 0;
-    private int defaultDay = 0;
-    
-    //set date String Labels
-    private static String yearLabelString = "Year (yyyy): ";
-    private static String monthLabelString = "Month (mm): ";
-    private static String dayLabelString = "Day (dd): ";
-    
-    ////set date data entry fields
-    private JFormattedTextField setYear;
-    private JFormattedTextField setMonth;
-    private JFormattedTextField setDay;
-    
-    //format the data entry fields
-    private NumberFormat yearFormat;
-    private NumberFormat monthFormat;
-    private NumberFormat dayFormat;
-    
-    
-    
+  
     private final static String newline = "\n";
     private String File_Name_0;
     private int lineCount= 0;
@@ -77,8 +52,6 @@ public class LogReader extends JPanel implements ActionListener {
     static final int INT_max = 60;
     static final int INT_init = 30;
     
-    private String logType;
-    
  
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
@@ -88,46 +61,7 @@ public class LogReader extends JPanel implements ActionListener {
         textArea = new JTextArea(30, 65);
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
-        
-        //Create modified text area
-        
-        //Create Labels
-        yearLabel = new JLabel(yearLabelString);
-        monthLabel = new JLabel(monthLabelString);
-        dayLabel = new JLabel(dayLabelString);
-        
-        //Create and set up text fields
-        setYear = new JFormattedTextField(yearFormat);
-        setYear.setValue(new Integer(defaultYear));
-        setYear.setColumns(10);
-        //setYear.addPropertyChangeListener("value", (PropertyChangeListener) this);
-        
-        setMonth = new JFormattedTextField(monthFormat);
-        setMonth.setValue(new Integer(defaultMonth));
-        setMonth.setColumns(10);
-        //setMonth.addPropertyChangeListener("value", (PropertyChangeListener) this);
-        
-        setDay = new JFormattedTextField(dayFormat);
-        setDay.setValue(new Integer(defaultDay));
-        setDay.setColumns(10);
-        //setDay.addPropertyChangeListener("value", (PropertyChangeListener) this);
-        
-        //set up labels to appropriate text fields
-        yearLabel.setLabelFor(setYear);
-        monthLabel.setLabelFor(setMonth);
-        dayLabel.setLabelFor(setDay);
-        
-        //Set up labels in a labelPane
-        JPanel labelPane = new JPanel(new GridLayout(0,1));
-        labelPane.add(yearLabel);
-        labelPane.add(monthLabel);
-        labelPane.add(dayLabel);
-        
-        //set up the text fields in a panel
-        JPanel fieldPane = new JPanel(new GridLayout(0,1));
-        fieldPane.add(setYear);
-        fieldPane.add(setMonth);
-        fieldPane.add(setDay);
+            
        
         
         JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
@@ -139,11 +73,11 @@ public class LogReader extends JPanel implements ActionListener {
         timer_slider.setPaintLabels(true);
         
         
-         //Build File menu
+                 //Build File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
-        JMenuItem InputDate = new JMenuItem("Set Date");
+        JMenuItem dateMenuItem = new JMenuItem("Set Date");
         //In initialization code:
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
@@ -159,56 +93,8 @@ public class LogReader extends JPanel implements ActionListener {
         group.add(functionLog);
         group.add(projectBridgeLog);
         group.add(prosightLog);
-        //Register a listener for the radio buttons.
-        functionLog.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                logType = "function";
-                textArea.append("The Log Type is now set to retrive the Function Log" + newline);
-            }
-        });  
-        //Register a listener for the radio buttons.
-        projectBridgeLog.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                logType = "ProjectBridge";
-                textArea.append("The Log Type is now set to retrive the Project Bridge Log" + newline);
-            }
-        });
-        //Register a listener for the radio buttons.
-        prosightLog.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                logType = "prosight";
-                textArea.append("The Log Type is now set to retrive the Prosight Log" + newline);
-            }
-        });
-         InputDate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Scanner reader = new Scanner(System.in);
-                System.out.println("Enter a month (mm): ");
-                int month = reader.nextInt();             
-                System.out.println("Enter a day (dd): ");
-                int day = reader.nextInt();
-                System.out.println("Enter a year (yyyy): ");
-                int year = reader.nextInt();
-                delay = ((int)timer_slider.getValue())*100*60;
-                textArea.append(newline + String.format("%02d", delay) + newline);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                timer.setDelay(delay);
-                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
-            }
-        });
-        startMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                int day = calendar.get(Calendar.DATE);
-                int month = calendar.get(Calendar.MONTH) + 1;
-                int year = calendar.get(Calendar.YEAR);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
-                delay = ((int)timer_slider.getValue())*1000*60;
-                timer.setDelay(delay);
-            }
-        });
-        //Build Clear Menu
+        
+                //Build Clear Menu
         JMenu clearField = new JMenu("Clear");
         JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
         JMenuItem clearAllItem = new JMenuItem("Clear Text and Close");
@@ -217,14 +103,8 @@ public class LogReader extends JPanel implements ActionListener {
                 textArea.setText(null);
             }
         });
-        clearAllItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                textArea.setText(null);
-                System.exit(0);
-            }
-        });
-        //add menus to menubar
-        fileMenu.add(InputDate);
+        
+        fileMenu.add(dateMenuItem);
         fileMenu.add(startMenuItem);
         fileMenu.add(functionLog);
         fileMenu.add(projectBridgeLog);
@@ -247,12 +127,47 @@ public class LogReader extends JPanel implements ActionListener {
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
         c.weighty = 1.0;
-        add(scrollPane, c); 
-        //Put the above panels into a unified panel
-        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        add(labelPane);
-        add(fieldPane);
+        add(scrollPane, c);
+
+           
+ 
+
+        
+        dateMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                createAndShowDateMenuGUI();
+
+
+
+            }
+        });
+        startMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+                int day = calendar.get(Calendar.DATE);
+                int month = calendar.get(Calendar.MONTH) + 1;
+                int year = calendar.get(Calendar.YEAR);
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
+                delay = ((int)timer_slider.getValue())*1000*60;
+                timer.setDelay(delay);
+                //textArea.append(newline + String.format("%02d", delay) + newline);
+
+            }
+        });
+
+        clearAllItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(null);
+                System.exit(0);
+            }
+        });
+        
+
     }
+    
+
  
     
     // Below is the main part of the code which is the file input as well as error handling. Using the date which is determined from the user, the code
@@ -311,7 +226,20 @@ public class LogReader extends JPanel implements ActionListener {
         //Code ends here
     }
  
-
+    private static void createAndShowDateMenuGUI(){
+        //Create and set up the window.
+        JFrame setDateFrame = new JFrame("Set Date");
+        //setDateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        
+        //Add contents to the window.
+        setDateFrame.add(new setDateFrame());
+ 
+        
+        //Display the window.
+        setDateFrame.pack();
+        setDateFrame.setVisible(true);
+    }
 
     
     
@@ -345,3 +273,4 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
+
