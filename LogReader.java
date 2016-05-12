@@ -26,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
 import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,11 +39,33 @@ import javax.swing.JPanel;
 public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
-    private final JButton buttonStart = new JButton("Start");
-    private final JButton CurrentDate = new JButton("Current Date");
-    private final JButton InputQuestion = new JButton("Would you like to use the Current Date or Input a Date:");
     private final JButton InputDate = new JButton("Input Date");
     protected JTextArea textArea;
+    
+    //Labels and default values for user to input the date of log
+    private JLabel yearLabel;
+    private JLabel monthLabel;
+    private JLabel dayLabel;
+    private int defaultYear = 2016;
+    private int defaultMonth = 0;
+    private int defaultDay = 0;
+    
+    //set date String Labels
+    private static String yearLabelString = "Year (yyyy): ";
+    private static String monthLabelString = "Month (mm): ";
+    private static String dayLabelString = "Day (dd): ";
+    
+    ////set date data entry fields
+    private JFormattedTextField setYear;
+    private JFormattedTextField setMonth;
+    private JFormattedTextField setDay;
+    
+    //format the data entry fields
+    private NumberFormat yearFormat;
+    private NumberFormat monthFormat;
+    private NumberFormat dayFormat;
+    
+    
     
     private final static String newline = "\n";
     private String File_Name_0;
@@ -55,7 +79,7 @@ public class LogReader extends JPanel implements ActionListener {
     static final int INT_init = 30;
     
  
-    // This class, "TextDemo" is used to create the gridlayout for the text area as well as create the button layout in the application.
+    // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
     // Date (Returns the current date), Input Date (Returns user input date), and Start (Starts the log).
     public LogReader() {
@@ -64,14 +88,56 @@ public class LogReader extends JPanel implements ActionListener {
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
+        //Create modified text area
         
-        //buttonStart.addActionListener(this);
+        //Create Labels
+        yearLabel = new JLabel(yearLabelString);
+        monthLabel = new JLabel(monthLabelString);
+        dayLabel = new JLabel(dayLabelString);
+        
+        //Create and set up text fields
+        setYear = new JFormattedTextField(yearFormat);
+        setYear.setValue(new Integer(defaultYear));
+        setYear.setColumns(10);
+        //setYear.addPropertyChangeListener("value", (PropertyChangeListener) this);
+        
+        setMonth = new JFormattedTextField(monthFormat);
+        setMonth.setValue(new Integer(defaultMonth));
+        setMonth.setColumns(10);
+        //setMonth.addPropertyChangeListener("value", (PropertyChangeListener) this);
+        
+        setDay = new JFormattedTextField(dayFormat);
+        setDay.setValue(new Integer(defaultDay));
+        setDay.setColumns(10);
+        //setDay.addPropertyChangeListener("value", (PropertyChangeListener) this);
+        
+        //set up labels to appropriate text fields
+        yearLabel.setLabelFor(setYear);
+        monthLabel.setLabelFor(setMonth);
+        dayLabel.setLabelFor(setDay);
+        
+        //Set up labels in a labelPane
+        JPanel labelPane = new JPanel(new GridLayout(0,1));
+        labelPane.add(yearLabel);
+        labelPane.add(monthLabel);
+        labelPane.add(dayLabel);
+        
+        //set up the text fields in a panel
+        JPanel fieldPane = new JPanel(new GridLayout(0,1));
+        fieldPane.add(setYear);
+        fieldPane.add(setMonth);
+        fieldPane.add(setDay);
+       
+        
+        
+        
         
          //Build File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
+        
         fileMenu.add(startMenuItem);
         fileMenu.add(dateMenuItem);
       
@@ -101,6 +167,11 @@ public class LogReader extends JPanel implements ActionListener {
         c.weightx = 1.0;
         c.weighty = 1.0;
         add(scrollPane, c);
+        
+                //Put the above panels into a unified panel
+        //setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        add(labelPane);
+        add(fieldPane);
            
  
         InputDate.addActionListener(new ActionListener() {
@@ -192,6 +263,10 @@ public class LogReader extends JPanel implements ActionListener {
         //Code ends here
     }
  
+
+
+    
+    
     
     // Create the GUI and show it.  For thread safety, this method should be invoked from the
     // event dispatch thread.
@@ -222,3 +297,4 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
+
