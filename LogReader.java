@@ -52,6 +52,8 @@ public class LogReader extends JPanel implements ActionListener {
     static final int INT_max = 60;
     static final int INT_init = 30;
     
+    private String logType;
+    
  
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
@@ -131,7 +133,27 @@ public class LogReader extends JPanel implements ActionListener {
 
            
  
-
+                //Register a listener for the radio buttons.
+        functionLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "function";
+                textArea.append("The Log Type is now set to retrive the Function Log" + newline);
+            }
+        });  
+        //Register a listener for the radio buttons.
+        projectBridgeLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "ProjectBridge";
+                textArea.append("The Log Type is now set to retrive the Project Bridge Log" + newline);
+            }
+        });
+        //Register a listener for the radio buttons.
+        prosightLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logType = "prosight";
+                textArea.append("The Log Type is now set to retrive the Prosight Log" + newline);
+            }
+        });
         
         dateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -142,18 +164,16 @@ public class LogReader extends JPanel implements ActionListener {
 
             }
         });
-        startMenuItem.addActionListener(new ActionListener() {
+startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
                 int day = calendar.get(Calendar.DATE);
                 int month = calendar.get(Calendar.MONTH) + 1;
                 int year = calendar.get(Calendar.YEAR);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
                 delay = ((int)timer_slider.getValue())*1000*60;
                 timer.setDelay(delay);
-                //textArea.append(newline + String.format("%02d", delay) + newline);
-
             }
         });
 
