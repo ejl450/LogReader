@@ -5,6 +5,9 @@
 * 05/11/2016
  */
 
+
+
+
 // Below are all the import that are used throughout this code as well as the package import.
 package logreader;
 import java.awt.*;
@@ -40,21 +43,19 @@ public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
     protected JTextArea textArea;
-  
     private final static String newline = "\n";
     private String File_Name_0;
     private int lineCount= 0;
     private int newLineCount= 0;
     private int delay = 0; //1 min(s)
     private Timer timer = new Timer(delay, this);
-    
     static final int INT_min = 0;
     static final int INT_max = 60;
     static final int INT_init = 30;
-    
     private String logType;
     
  
+    
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
     // Date (Returns the current date), Input Date (Returns user input date), and Start (Starts the log).
@@ -64,22 +65,21 @@ public class LogReader extends JPanel implements ActionListener {
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
             
-       
-        
+
         JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
-        //timer_slider.addChangeListener((ChangeListener) this);
         //Turn on labels at major tick marks.
-        timer_slider.setMajorTickSpacing(10);
-        timer_slider.setMinorTickSpacing(5);
+        timer_slider.setMajorTickSpacing(5);
+        timer_slider.setMinorTickSpacing(1);
         timer_slider.setPaintTicks(true);
         timer_slider.setPaintLabels(true);
         
         
-                 //Build File menu
+        //Build File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
+        
         //In initialization code:
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
@@ -96,25 +96,27 @@ public class LogReader extends JPanel implements ActionListener {
         group.add(projectBridgeLog);
         group.add(prosightLog);
         
-                //Build Clear Menu
+        //Build Clear Menu
         JMenu clearField = new JMenu("Clear");
         JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
         JMenuItem clearAllItem = new JMenuItem("Clear Text and Close");
-        clearTextItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                textArea.setText(null);
-            }
-        });
         
-        fileMenu.add(dateMenuItem);
+        //Build Interval Menu
+        JMenu intervalSlider = new JMenu("Refresh Interval");
+        JMenuItem interval = new JMenuItem("Interval");
+        
+        
         fileMenu.add(startMenuItem);
+        fileMenu.add(dateMenuItem);
         fileMenu.add(functionLog);
         fileMenu.add(projectBridgeLog);
         fileMenu.add(prosightLog); 
         clearField.add(clearTextItem);
         clearField.add(clearAllItem);
+        intervalSlider.add(interval);
         menuBar.add(fileMenu);
         menuBar.add(clearField);
+        menuBar.add(intervalSlider);
 
         
         //Add Components to this panel.
@@ -124,16 +126,13 @@ public class LogReader extends JPanel implements ActionListener {
         d.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
         add(menuBar,c);
-        //add(InputDate,d);
-        add(timer_slider, c);
+        //add(timer_slider, c);
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
         c.weighty = 1.0;
         add(scrollPane, c);
 
-           
- 
-                //Register a listener for the radio buttons.
+        
         functionLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "function";
@@ -154,17 +153,17 @@ public class LogReader extends JPanel implements ActionListener {
                 textArea.append("The Log Type is now set to retrive the Prosight Log" + newline);
             }
         });
-        
         dateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
                 createAndShowDateMenuGUI();
-
-
-
             }
         });
-startMenuItem.addActionListener(new ActionListener() {
+        interval.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createAndShowIntervalGUI();
+            }
+        });
+        startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
                 int day = calendar.get(Calendar.DATE);
@@ -176,18 +175,19 @@ startMenuItem.addActionListener(new ActionListener() {
                 timer.setDelay(delay);
             }
         });
-
         clearAllItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 textArea.setText(null);
                 System.exit(0);
             }
         });
-        
-
+        clearTextItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(null);
+            }
+        });
     }
     
-
  
     
     // Below is the main part of the code which is the file input as well as error handling. Using the date which is determined from the user, the code
@@ -246,6 +246,25 @@ startMenuItem.addActionListener(new ActionListener() {
         //Code ends here
     }
  
+    
+   
+    private static void createAndShowIntervalGUI(){
+        //Create and set up the window.
+        JFrame setIntervalFrame = new JFrame("Set Refresh Interval");
+        //setDateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        
+        //Add contents to the window.
+        setIntervalFrame.add(new setIntervalFrame());
+ 
+        
+        //Display the window.
+        setIntervalFrame.pack();
+        setIntervalFrame.setVisible(true);
+    }
+    
+    
+    
     private static void createAndShowDateMenuGUI(){
         //Create and set up the window.
         JFrame setDateFrame = new JFrame("Set Date");
@@ -262,13 +281,12 @@ startMenuItem.addActionListener(new ActionListener() {
     }
 
     
-    
-    
+
     // Create the GUI and show it.  For thread safety, this method should be invoked from the
     // event dispatch thread.
     private static void createAndShowGUI(){
         //Create and set up the window.
-        JFrame frame = new JFrame("PPM Prosight Log");
+        JFrame frame = new JFrame("PPM/P6 Log");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         
@@ -280,6 +298,7 @@ startMenuItem.addActionListener(new ActionListener() {
         frame.pack();
         frame.setVisible(true);
     }
+ 
  
     
     // The main class which runs the entire code.
@@ -293,4 +312,3 @@ startMenuItem.addActionListener(new ActionListener() {
         });
     }
 }
-
