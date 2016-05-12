@@ -116,6 +116,23 @@ class setDateFrame extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(labelPane, BorderLayout.CENTER);
         add(fieldPane, BorderLayout.LINE_END);
+        
+       /**         okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Scanner reader = new Scanner(System.in);
+                System.out.println("Enter a month (mm): ");
+                int month = reader.nextInt();             
+                System.out.println("Enter a day (dd): ");
+                int day = reader.nextInt();
+                System.out.println("Enter a year (yyyy): ");
+                int year = reader.nextInt();
+                delay = ((int)timer_slider.getValue())*100*60;
+                textArea.append(newline + String.format("%02d", delay) + newline);
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                timer.setDelay(delay);
+                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
+            }
+        });**/
 
         
         
