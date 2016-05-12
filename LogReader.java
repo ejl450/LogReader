@@ -30,7 +30,7 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
- 
+
 
 
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
@@ -42,13 +42,17 @@ public class LogReader extends JPanel implements ActionListener {
     private final JButton InputQuestion = new JButton("Would you like to use the Current Date or Input a Date:");
     private final JButton InputDate = new JButton("Input Date");
     protected JTextArea textArea;
+    
     private final static String newline = "\n";
     private String File_Name_0;
     private int lineCount= 0;
     private int newLineCount= 0;
-    private int delay = 36*1000; //1 min(s)
+    private int delay; //1 min(s)
     private Timer timer = new Timer(delay, this);
     
+    static final int INT_min = 0;
+    static final int INT_max = 60;
+    static final int INT_init = 30;
     
  
     // This class, "TextDemo" is used to create the gridlayout for the text area as well as create the button layout in the application.
@@ -74,6 +78,15 @@ public class LogReader extends JPanel implements ActionListener {
         //add menus to menubar
         menuBar.add(fileMenu);
         
+        JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
+        //timer_slider.addChangeListener((ChangeListener) this);
+        //Turn on labels at major tick marks.
+        timer_slider.setMajorTickSpacing(10);
+        timer_slider.setMinorTickSpacing(5);
+        timer_slider.setPaintTicks(true);
+        timer_slider.setPaintLabels(true);
+        
+        delay = ((int)timer_slider.getValue())*1000*60;
         
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
@@ -81,11 +94,12 @@ public class LogReader extends JPanel implements ActionListener {
         c.gridwidth = GridBagConstraints.REMAINDER;
         d.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
-        add(menuBar);
-        add(InputQuestion,c);
+        add(menuBar,c);
+        //add(InputQuestion,c);
         add(CurrentDate,d);
         add(InputDate,d);
-        add(buttonStart,c);
+        add(timer_slider, c);
+        //add(buttonStart,c);
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
         c.weighty = 1.0;
@@ -210,5 +224,3 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
-
-
