@@ -47,7 +47,7 @@ public class LogReader extends JPanel implements ActionListener {
     private String File_Name_0;
     private int lineCount= 0;
     private int newLineCount= 0;
-    private int delay; //1 min(s)
+    private int delay = 0; //1 min(s)
     private Timer timer = new Timer(delay, this);
     
     static final int INT_min = 0;
@@ -86,7 +86,6 @@ public class LogReader extends JPanel implements ActionListener {
         timer_slider.setPaintTicks(true);
         timer_slider.setPaintLabels(true);
         
-        delay = ((int)timer_slider.getValue())*1000*60;
         
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
@@ -95,8 +94,6 @@ public class LogReader extends JPanel implements ActionListener {
         d.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
         add(menuBar,c);
-        //add(InputQuestion,c);
-        add(CurrentDate,d);
         add(InputDate,d);
         add(timer_slider, c);
         //add(buttonStart,c);
@@ -115,14 +112,14 @@ public class LogReader extends JPanel implements ActionListener {
                 int day = reader.nextInt();
                 System.out.println("Enter a year (yyyy): ");
                 int year = reader.nextInt();
-                
-              
+                delay = ((int)timer_slider.getValue())*100*60;
+                textArea.append(newline + String.format("%02d", delay) + newline);
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
-
+                timer.setDelay(delay);
+                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
             }
         });
-        CurrentDate.addActionListener(new ActionListener() {
+        startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
                 int day = calendar.get(Calendar.DATE);
@@ -130,6 +127,9 @@ public class LogReader extends JPanel implements ActionListener {
                 int year = calendar.get(Calendar.YEAR);
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
+                delay = ((int)timer_slider.getValue())*1000*60;
+                timer.setDelay(delay);
+                //textArea.append(newline + String.format("%02d", delay) + newline);
 
             }
         });
@@ -145,8 +145,7 @@ public class LogReader extends JPanel implements ActionListener {
         BufferedReader br = null;
         String line = null;
         int i = 0;
-      
-        
+                
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -168,7 +167,6 @@ public class LogReader extends JPanel implements ActionListener {
                    lineCount=reader.getLineNumber();
 
                     if(line==null || lineCount<=newLineCount){
-                        
                     timer.start();
                     reader.setLineNumber(lineCount);
                     
