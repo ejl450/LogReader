@@ -25,6 +25,8 @@ import java.util.Scanner;
 import java.util.TimerTask;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import static jdk.nashorn.internal.objects.NativeDate.setYear;
 
@@ -38,7 +40,7 @@ class setIntervalFrame extends JPanel {
     static final int INT_min = 0;
     static final int INT_max = 60;
     static final int INT_init = 5;
-    static int delay_0 = 5; //1 min(s)
+    public static int setIntervalFrameDelay; //1 min(s)
     
     public setIntervalFrame() {
         super(new GridBagLayout());
@@ -53,28 +55,35 @@ class setIntervalFrame extends JPanel {
         timer_slider.setPaintTicks(true);
         timer_slider.setPaintLabels(true);
         Dimension d = timer_slider.getPreferredSize();
-        timer_slider.setPreferredSize(new Dimension(d.width+500,d.height));
+        timer_slider.setPreferredSize(new Dimension(d.width+200,d.height+25));
         
         //Formatting
+        GridBagConstraints a = new GridBagConstraints();
+        GridBagConstraints b = new GridBagConstraints();
         GridBagConstraints c = new GridBagConstraints();
-        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridwidth = GridBagConstraints.HORIZONTAL;
         c.fill = GridBagConstraints.HORIZONTAL;
         
         //Adding to Panel
         add(intervalLabel,c);
         add(timer_slider,c);
-        add(okButton,c);
-        add(cancelButton,c);
+        add(okButton);
+        add(cancelButton);
         
         okButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                delay_0 = ((int)timer_slider.getValue());
+                setIntervalFrameDelay = ((int)timer_slider.getValue());
+                setVisible(false);
+                Window dialog = SwingUtilities.windowForComponent(okButton);
+                dialog.dispose();
             }          
-        }
+        });  
         cancelButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                System.exit(0);
+                setVisible(false);
+                Window dialog = SwingUtilities.windowForComponent(okButton);
+                dialog.dispose();
             }          
-        }
+        });
     }
 }
