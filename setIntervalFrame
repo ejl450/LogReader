@@ -1,0 +1,86 @@
+package logreader;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.File;
+import javax.swing.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.logging.Level; 
+import java.util.logging.Logger;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
+import java.util.Scanner;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import static jdk.nashorn.internal.objects.NativeDate.setYear;
+
+
+
+class setIntervalFrame extends JPanel {
+    //Buttons
+    private final JButton okButton = new JButton("OK");
+    private final JButton cancelButton = new JButton("Cancel");
+    //Constants
+    static final int INT_min = 0;
+    static final int INT_max = 60;
+    static final int INT_init = 30;
+    
+    
+    public setIntervalFrame() {
+        super(new GridBagLayout());
+        
+        //Create Labels
+        JLabel intervalLabel = new JLabel("Interval Refresh Rate (Minutes):");
+        
+        //Slider
+        JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
+        timer_slider.setMajorTickSpacing(5);
+        timer_slider.setMinorTickSpacing(1);
+        timer_slider.setPaintTicks(true);
+        timer_slider.setPaintLabels(true);
+        Dimension d = timer_slider.getPreferredSize();
+        timer_slider.setPreferredSize(new Dimension(d.width+500,d.height));
+        
+        //Formatting
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        
+        //Adding to Panel
+        add(intervalLabel,c);
+        add(timer_slider,c);
+        add(okButton,c);
+        add(cancelButton,c);
+        
+        
+        /*okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Scanner reader = new Scanner(System.in);
+                System.out.println("Enter a month (mm): ");
+                int month = reader.nextInt();             
+                System.out.println("Enter a day (dd): ");
+                int day = reader.nextInt();
+                System.out.println("Enter a year (yyyy): ");
+                int year = reader.nextInt();
+                delay = ((int)timer_slider.getValue())*100*60;
+                textArea.append(newline + String.format("%02d", delay) + newline);
+                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                timer.setDelay(delay);
+                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
+            }
+        });*/
+    }
+}
