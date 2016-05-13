@@ -53,7 +53,7 @@ public class LogReader extends JPanel implements ActionListener {
     static final int INT_max = 60;
     static final int INT_init = 5;
     private String logType;
-    static int delay_0 = 5;
+    static int calculationDelay = 5;
 
 
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
@@ -171,7 +171,8 @@ public class LogReader extends JPanel implements ActionListener {
                 int year = calendar.get(Calendar.YEAR);
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-                delay = delay_0*1000*60;
+                calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
+                delay = calculationDelay*1000*60;
                 timer.setDelay(delay);
             }
         });
@@ -257,7 +258,6 @@ public class LogReader extends JPanel implements ActionListener {
         //Add contents to the window.
         setIntervalFrame.add(new setIntervalFrame());
  
-        
         //Display the window.
         setIntervalFrame.pack();
         setIntervalFrame.setVisible(true);
