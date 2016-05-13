@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Scanner;
@@ -42,9 +43,9 @@ class setDateFrame extends JPanel {
     private JLabel yearLabel;
     private JLabel monthLabel;
     private JLabel dayLabel;
-    private int defaultYear = 2016;
-    private int defaultMonth = 05;
-    private int defaultDay = 9;
+    public static int defaultYear = 2016;
+    public static int defaultMonth = 05;
+    public static int defaultDay = 9;
     
     //set date String Labels
     private static String yearLabelString = "Year (yyyy): ";
@@ -62,8 +63,10 @@ class setDateFrame extends JPanel {
     private NumberFormat dayFormat;
     
     //Buttons
-    private final JButton okButton = new JButton("OK");
-    private final JButton cancelButton = new JButton("Cancel");
+    public static JButton okButton = new JButton("OK");
+    public static JButton cancelButton = new JButton("Cancel");
+    
+    
     
     public setDateFrame() {
         
@@ -71,6 +74,7 @@ class setDateFrame extends JPanel {
         setUpFormats();
         //Create modified text area
         JTextArea dateMenuTextArea = new JTextArea(30, 65);
+    
         
         //Create Labels
         yearLabel = new JLabel(yearLabelString);
@@ -81,17 +85,14 @@ class setDateFrame extends JPanel {
         setYear = new JFormattedTextField(yearFormat);
         setYear.setValue(new Integer(defaultYear));
         setYear.setColumns(10);
-        //setYear.addPropertyChangeListener("value", (PropertyChangeListener) this);
         
         setMonth = new JFormattedTextField(monthFormat);
         setMonth.setValue(new Integer(defaultMonth));
         setMonth.setColumns(10);
-        //setMonth.addPropertyChangeListener("value", (PropertyChangeListener) this);
         
         setDay = new JFormattedTextField(dayFormat);
         setDay.setValue(new Integer(defaultDay));
         setDay.setColumns(10);
-        //setDay.addPropertyChangeListener("value", (PropertyChangeListener) this);
         
         //set up labels to appropriate text fields
         yearLabel.setLabelFor(setYear);
@@ -117,22 +118,23 @@ class setDateFrame extends JPanel {
         add(labelPane, BorderLayout.CENTER);
         add(fieldPane, BorderLayout.LINE_END);
         
-       /**         okButton.addActionListener(new ActionListener() {
+        okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Scanner reader = new Scanner(System.in);
-                System.out.println("Enter a month (mm): ");
-                int month = reader.nextInt();             
-                System.out.println("Enter a day (dd): ");
-                int day = reader.nextInt();
-                System.out.println("Enter a year (yyyy): ");
-                int year = reader.nextInt();
-                delay = ((int)timer_slider.getValue())*100*60;
-                textArea.append(newline + String.format("%02d", delay) + newline);
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\prosight_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                timer.setDelay(delay);
-                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));               
+                int inputMonth = defaultMonth;
+                int inputDay = defaultDay;
+                int inputYear = defaultYear;
+                Window dialog = SwingUtilities.windowForComponent(okButton);
+                dialog.dispose();
             }
-        });**/
+        });
+            
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                Window dialog = SwingUtilities.windowForComponent(cancelButton);
+                dialog.dispose();
+            }
+        });
 
         
         
@@ -153,6 +155,19 @@ class setDateFrame extends JPanel {
         dayFormat = NumberFormat.getNumberInstance();
         dayFormat.setMinimumIntegerDigits(2);
         dayFormat.setMaximumIntegerDigits(2);
+    }
+    
+    public void propertyChange(PropertyChangeEvent e){
+        Object source = e.getSource();
+        
+        if(source==setYear){
+            defaultYear=((Number)setYear.getValue()).intValue();          
+        }else if(source==setMonth){
+            defaultMonth=((Number)setMonth.getValue()).intValue();
+        }else if(source==setDay){
+            defaultDay=((Number)setDay.getValue()).intValue();
+        }
+        
     }
 }
     
