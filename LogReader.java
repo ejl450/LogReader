@@ -82,16 +82,6 @@ public class LogReader extends JPanel implements ActionListener {
         JTextField lastUpdatedField = new JTextField(20);
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
-        add(lastUpdatedField);
-        
-            
-
-        JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
-        //Turn on labels at major tick marks.
-        timer_slider.setMajorTickSpacing(5);
-        timer_slider.setMinorTickSpacing(1);
-        timer_slider.setPaintTicks(true);
-        timer_slider.setPaintLabels(true);
         
         
         //Build File menu
@@ -99,8 +89,7 @@ public class LogReader extends JPanel implements ActionListener {
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
-        
-        //In initialization code:
+               
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
         functionLog.setMnemonic(KeyEvent.VK_A);
@@ -125,7 +114,6 @@ public class LogReader extends JPanel implements ActionListener {
         JMenu intervalSlider = new JMenu("Refresh Interval");
         JMenuItem interval = new JMenuItem("Interval");
         
-   
         fileMenu.add(startMenuItem);
         fileMenu.add(dateMenuItem);
         fileMenu.add(functionLog);
@@ -137,16 +125,13 @@ public class LogReader extends JPanel implements ActionListener {
         menuBar.add(fileMenu);
         menuBar.add(clearField);
         menuBar.add(intervalSlider);
-
-        
+     
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
-        GridBagConstraints d = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.REMAINDER;
-        d.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
-        add(menuBar,c);
-        //add(timer_slider, c);
+        add(menuBar);
+        add(lastUpdatedField,c);
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
         c.weighty = 1.0;
@@ -159,14 +144,12 @@ public class LogReader extends JPanel implements ActionListener {
                 textArea.append("The Log Type is now set to retrive the Function Log" + newline);
             }
         });  
-        //Register a listener for the radio buttons.
         projectBridgeLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "ProjectBridge";
                 textArea.append("The Log Type is now set to retrive the Project Bridge Log" + newline);
             }
         });
-        //Register a listener for the radio buttons.
         prosightLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "prosight";
@@ -185,7 +168,6 @@ public class LogReader extends JPanel implements ActionListener {
         });
         startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 textArea.append("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
@@ -215,7 +197,7 @@ public class LogReader extends JPanel implements ActionListener {
 
                 //set file name
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                textArea.append("Press Start to retrieve the Prosight Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year));
+                textArea.append("Press Start to retrieve the " + logType + " Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year) + newline);
                 
                 //set delay
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
@@ -352,4 +334,3 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
-
