@@ -45,6 +45,7 @@ public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
     protected JTextArea textArea;
+    public static JTextField lastUpdatedField = new JTextField(20);
     
     //Misc
     private final static String newline = "\n";
@@ -79,7 +80,6 @@ public class LogReader extends JPanel implements ActionListener {
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
-        JTextField lastUpdatedField = new JTextField(20);
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
         
@@ -141,19 +141,19 @@ public class LogReader extends JPanel implements ActionListener {
         functionLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "function";
-                textArea.append("The Log Type is now set to retrive the Function Log" + newline);
+                lastUpdatedField.setText("The Log Type is now set to retrieve the Function Log" + newline);
             }
         });  
         projectBridgeLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "ProjectBridge";
-                textArea.append("The Log Type is now set to retrive the Project Bridge Log" + newline);
+                lastUpdatedField.setText("The Log Type is now set to retrieve the Project Bridge Log" + newline);
             }
         });
         prosightLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "prosight";
-                textArea.append("The Log Type is now set to retrive the Prosight Log" + newline);
+                lastUpdatedField.setText("The Log Type is now set to retrieve the Prosight Log" + newline);
             }
         });
         dateMenuItem.addActionListener(new ActionListener() {
@@ -169,7 +169,7 @@ public class LogReader extends JPanel implements ActionListener {
         startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                textArea.append("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
                 delay = calculationDelay*1000*60;
                 timer.setDelay(delay);
@@ -197,7 +197,7 @@ public class LogReader extends JPanel implements ActionListener {
 
                 //set file name
                 File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                textArea.append("Press Start to retrieve the " + logType + " Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year) + newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year) + newline);
                 
                 //set delay
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
@@ -230,7 +230,7 @@ public class LogReader extends JPanel implements ActionListener {
         
         File f = new File(File_Name_0);
         if(!f.isFile()){
-            textArea.append(newline + "File " + File_Name_0 + " cannot be found, log is not generated for today!"+newline);               
+            lastUpdatedField.setText(newline + "File " + File_Name_0 + " cannot be found, log is not generated for today!"+newline);               
         }
         else{
             try{
@@ -265,7 +265,7 @@ public class LogReader extends JPanel implements ActionListener {
             }
         }
         
-        textArea.append(newline+"Last time updated: " + dateFormat.format(date)+newline);
+        lastUpdatedField.setText(newline+"Last time updated: " + dateFormat.format(date)+newline);
         //Code ends here
     }
  
