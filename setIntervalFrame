@@ -58,8 +58,6 @@ class setIntervalFrame extends JPanel {
         timer_slider.setPreferredSize(new Dimension(d.width+200,d.height+25));
         
         //Formatting
-        GridBagConstraints a = new GridBagConstraints();
-        GridBagConstraints b = new GridBagConstraints();
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.HORIZONTAL;
         c.fill = GridBagConstraints.HORIZONTAL;
