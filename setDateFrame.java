@@ -37,7 +37,7 @@ import static jdk.nashorn.internal.objects.NativeDate.setYear;
  *
  * @author lynne
  */
-class setDateFrame extends JPanel {
+class setDateFrame extends JPanel implements PropertyChangeListener {
     
     //Labels and default values for user to input the date of log
     private JLabel yearLabel;
@@ -85,14 +85,17 @@ class setDateFrame extends JPanel {
         setYear = new JFormattedTextField(yearFormat);
         setYear.setValue(new Integer(defaultYear));
         setYear.setColumns(10);
+        setYear.addPropertyChangeListener("value", this);
         
         setMonth = new JFormattedTextField(monthFormat);
         setMonth.setValue(new Integer(defaultMonth));
         setMonth.setColumns(10);
+        setMonth.addPropertyChangeListener("value", this);
         
         setDay = new JFormattedTextField(dayFormat);
         setDay.setValue(new Integer(defaultDay));
         setDay.setColumns(10);
+        setDay.addPropertyChangeListener("value", this);
         
         //set up labels to appropriate text fields
         yearLabel.setLabelFor(setYear);
@@ -144,6 +147,7 @@ class setDateFrame extends JPanel {
     //parse numbers input by user.
     private void setUpFormats() {
         yearFormat = NumberFormat.getNumberInstance();
+        yearFormat.setGroupingUsed(false);
         yearFormat.setMinimumIntegerDigits(4);
         yearFormat.setMaximumIntegerDigits(4);
  
