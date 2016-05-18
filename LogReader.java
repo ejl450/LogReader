@@ -45,7 +45,8 @@ public class LogReader extends JPanel implements ActionListener {
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
     protected JTextArea textArea;
-    public static JTextField lastUpdatedField = new JTextField(20);
+    public static JTextField lastUpdatedField = new JTextField(40);
+    public static JTextField intervalField = new JTextField();
     
     //Misc
     private final static String newline = "\n";
@@ -55,14 +56,14 @@ public class LogReader extends JPanel implements ActionListener {
     private String logType;
     
     //Timer/Delay
-    static int delay = 1000*60; //1 min(s)
+    static int delay = 5; //1 min(s)
     private Timer timer = new Timer(delay, this);
     
     //Slider Info
     static final int INT_min = 0;
     static final int INT_max = 60;
     static final int INT_init = 5;
-    static int calculationDelay = 5;
+    static int calculationDelay;
     
     //Date Information
     public static Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
@@ -82,7 +83,11 @@ public class LogReader extends JPanel implements ActionListener {
         
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
-        
+        intervalField.setEditable(false);
+        intervalField.setHorizontalAlignment(10);
+        intervalField.setHorizontalAlignment(SwingConstants.RIGHT);
+        intervalField.setText("Time (mins): " + String.format("%02d", delay));
+             
         
         //Build File menu
         JMenu fileMenu = new JMenu("File");
@@ -130,12 +135,16 @@ public class LogReader extends JPanel implements ActionListener {
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints d = new GridBagConstraints();
+        d.gridwidth = GridBagConstraints.REMAINDER;
+        d.fill = GridBagConstraints.HORIZONTAL;
         add(menuBar);
         add(lastUpdatedField,c);
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
         c.weighty = 1.0;
         add(scrollPane, c);
+        add(intervalField,d);
 
         
         functionLog.addActionListener(new ActionListener() {
@@ -222,7 +231,7 @@ public class LogReader extends JPanel implements ActionListener {
         BufferedReader br = null;
         String line = null;
         int i = 0;
-                
+        boolean skipUpdate = false;        
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -230,7 +239,8 @@ public class LogReader extends JPanel implements ActionListener {
         
         File f = new File(File_Name_0);
         if(!f.isFile()){
-            lastUpdatedField.setText(newline + "File " + File_Name_0 + " cannot be found, log is not generated for today!"+newline);               
+            lastUpdatedField.setText(newline + "File " + File_Name_0 + " cannot be found, log is not generated for today!"+newline);
+            skipUpdate = true;
         }
         else{
             try{
@@ -264,9 +274,10 @@ public class LogReader extends JPanel implements ActionListener {
                 }
             }
         }
-        
+        if (skipUpdate == false){
         lastUpdatedField.setText(newline+"Last time updated: " + dateFormat.format(date)+newline);
         //Code ends here
+        }
     }
  
     
