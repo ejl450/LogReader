@@ -35,6 +35,11 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.filechooser.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 
 
@@ -47,6 +52,7 @@ public class LogReader extends JPanel implements ActionListener {
     protected JTextArea textArea;
     public static JTextField lastUpdatedField = new JTextField(40);
     public static JTextField intervalField = new JTextField();
+    public static JFileChooser fileNavigator = new JFileChooser();
     
     //Misc
     private final static String newline = "\n";
@@ -56,7 +62,7 @@ public class LogReader extends JPanel implements ActionListener {
     private String logType;
     
     //Timer/Delay
-    static int delay = 5; //1 min(s)
+    static int delay = 5*60*1000; //5 min(s)
     private Timer timer = new Timer(delay, this);
     
     //Slider Info
@@ -94,6 +100,7 @@ public class LogReader extends JPanel implements ActionListener {
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
+        JMenuItem exportMenuItem = new JMenuItem("Export");
                
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
@@ -121,6 +128,7 @@ public class LogReader extends JPanel implements ActionListener {
         
         fileMenu.add(startMenuItem);
         fileMenu.add(dateMenuItem);
+        fileMenu.add(exportMenuItem);
         fileMenu.add(functionLog);
         fileMenu.add(projectBridgeLog);
         fileMenu.add(prosightLog); 
@@ -168,6 +176,28 @@ public class LogReader extends JPanel implements ActionListener {
         dateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 createAndShowDateMenuGUI();
+            }
+        });   
+        exportMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fileNavigator.setSelectedFile(new File(".xml"));
+                int returnVal = fileNavigator.showSaveDialog(exportMenuItem);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileNavigator.getSelectedFile();
+                    BufferedWriter bw;
+                try {
+                    bw = new BufferedWriter(new FileWriter(file));
+                    bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<data>" + textArea.getText() + "</data>");
+                    bw.flush();
+                    bw.close();
+                }               
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+                }
+                textArea.setCaretPosition(textArea.getDocument().getLength());
+
             }
         });
         interval.addActionListener(new ActionListener() {
@@ -285,7 +315,6 @@ public class LogReader extends JPanel implements ActionListener {
     private static void createAndShowIntervalGUI(){
         //Create and set up the window.
         JFrame setIntervalFrame = new JFrame("Set Refresh Interval");
-        //setDateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         
         //Add contents to the window.
@@ -301,7 +330,6 @@ public class LogReader extends JPanel implements ActionListener {
     private static void createAndShowDateMenuGUI(){
         //Create and set up the window.
         JFrame setDateFrame = new JFrame("Set Date");
-        //setDateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         
         //Add contents to the window.
