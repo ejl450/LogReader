@@ -89,7 +89,7 @@ public class LogReader extends JPanel implements ActionListener {
         intervalField.setEditable(false);
         intervalField.setHorizontalAlignment(10);
         intervalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        intervalField.setText("Time (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));  
+        intervalField.setText("Refresh Interval (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));  
   
         //Build File menu
         JMenu fileMenu = new JMenu("File");
@@ -152,19 +152,19 @@ public class LogReader extends JPanel implements ActionListener {
         functionLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "function";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });  
         projectBridgeLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "ProjectBridge";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         prosightLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "prosight";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         dateMenuItem.addActionListener(new ActionListener() {
@@ -174,7 +174,7 @@ public class LogReader extends JPanel implements ActionListener {
         });   
         exportMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileNavigator.setSelectedFile(new File(".xml"));
+                fileNavigator.setSelectedFile(new File(logType+" log"+"_"+month+"_"+day+"_"+year+".xml"));
                 int returnVal = fileNavigator.showSaveDialog(exportMenuItem);
                 File file = fileNavigator.getSelectedFile();
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
