@@ -38,7 +38,6 @@ import static jdk.nashorn.internal.objects.NativeDate.setYear;
  * @author lynne
  */
 class setDateFrame extends JPanel implements PropertyChangeListener {
-    
     //Labels and default values for user to input the date of log
     private JLabel yearLabel;
     private JLabel monthLabel;
@@ -69,38 +68,36 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
     
     
     public setDateFrame() {
-        
         super(new BorderLayout());
         setUpFormats();
-        //Create modified text area
-        JTextArea dateMenuTextArea = new JTextArea(30, 65);
-    
+
         
         //Create Labels
         yearLabel = new JLabel(yearLabelString);
         monthLabel = new JLabel(monthLabelString);
         dayLabel = new JLabel(dayLabelString);
         
+        
         //Create and set up text fields
         setYear = new JFormattedTextField(yearFormat);
         setYear.setValue(new Integer(defaultYear));
         setYear.setColumns(10);
         setYear.addPropertyChangeListener("value", this);
-        
         setMonth = new JFormattedTextField(monthFormat);
         setMonth.setValue(new Integer(defaultMonth));
         setMonth.setColumns(10);
         setMonth.addPropertyChangeListener("value", this);
-        
         setDay = new JFormattedTextField(dayFormat);
         setDay.setValue(new Integer(defaultDay));
         setDay.setColumns(10);
         setDay.addPropertyChangeListener("value", this);
         
+        
         //set up labels to appropriate text fields
         yearLabel.setLabelFor(setYear);
         monthLabel.setLabelFor(setMonth);
         dayLabel.setLabelFor(setDay);
+        
         
         //Set up labels in a labelPane
         JPanel labelPane = new JPanel(new GridLayout(0,1));
@@ -109,6 +106,7 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
         labelPane.add(dayLabel);
         labelPane.add(okButton,BorderLayout.SOUTH);
         
+        
         //set up the text fields in a panel
         JPanel fieldPane = new JPanel(new GridLayout(0,1));
         fieldPane.add(setYear);
@@ -116,10 +114,12 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
         fieldPane.add(setDay);
         fieldPane.add(cancelButton,BorderLayout.SOUTH);
         
+        
         //Format and add panels
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(labelPane, BorderLayout.CENTER);
         add(fieldPane, BorderLayout.LINE_END);
+        
         
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -129,19 +129,17 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
                 Window dialog = SwingUtilities.windowForComponent(okButton);
                 dialog.dispose();
             }
-        });
-            
+        });   
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
                 Window dialog = SwingUtilities.windowForComponent(cancelButton);
                 dialog.dispose();
             }
-        });
-
-        
-        
+        });   
     }
+    
+    
     
     //Create and set up number formats. These objects also
     //parse numbers input by user.
@@ -160,6 +158,8 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
         dayFormat.setMinimumIntegerDigits(2);
         dayFormat.setMaximumIntegerDigits(2);
     }
+   
+    
     
     public void propertyChange(PropertyChangeEvent e){
         Object source = e.getSource();
@@ -175,4 +175,3 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
     }
 }
     
-
