@@ -80,6 +80,7 @@ public class LogReader extends JPanel implements ActionListener {
         super(new GridBagLayout());
         textArea = new JTextArea(30, 65);
         textArea.setEditable(false);
+        textArea.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
         
@@ -113,7 +114,7 @@ public class LogReader extends JPanel implements ActionListener {
         //Build Clear Menu
         JMenu clearField = new JMenu("Clear");
         JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
-        JMenuItem clearAllItem = new JMenuItem("Clear Text and Close");
+        JMenuItem clearAllItem = new JMenuItem("Clear Text and Stop");
         //Build Interval Menu
         JMenu intervalSlider = new JMenu("Refresh Interval");
         JMenuItem interval = new JMenuItem("Interval");
@@ -151,19 +152,19 @@ public class LogReader extends JPanel implements ActionListener {
         functionLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "function";
-                lastUpdatedField.setText("The Log Type is now set to retrieve the Function Log" + newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });  
         projectBridgeLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "ProjectBridge";
-                lastUpdatedField.setText("The Log Type is now set to retrieve the Project Bridge Log" + newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         prosightLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "prosight";
-                lastUpdatedField.setText("The Log Type is now set to retrieve the Prosight Log" + newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         dateMenuItem.addActionListener(new ActionListener() {
@@ -214,12 +215,17 @@ public class LogReader extends JPanel implements ActionListener {
         });
         clearAllItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                //reset GUI
+                lastUpdatedField.setText("Text cleared and program stopped");
                 textArea.setText(null);
-                System.exit(0);
+                lineCount=0;
+                newLineCount=0;
+                timer.stop();
             }
         });
         clearTextItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                lastUpdatedField.setText("Text cleared");
                 textArea.setText(null);
             }
         });
@@ -370,3 +376,4 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
+
