@@ -36,17 +36,19 @@ class setIntervalFrame extends JPanel {
     //Buttons
     private final JButton okButton = new JButton("OK");
     private final JButton cancelButton = new JButton("Cancel");
+    
     //Constants
     static final int INT_min = 0;
     static final int INT_max = 60;
     static final int INT_init = 5;
-    public static int setIntervalFrameDelay; //1 min(s)
+    public static int setIntervalFrameDelay = 5;
     
     public setIntervalFrame() {
         super(new GridBagLayout());
         
         //Create Labels
         JLabel intervalLabel = new JLabel("Interval Refresh Rate (Minutes):");
+        
         
         //Slider
         JSlider timer_slider = new JSlider(JSlider.HORIZONTAL, INT_min, INT_max, INT_init);
@@ -57,16 +59,16 @@ class setIntervalFrame extends JPanel {
         Dimension d = timer_slider.getPreferredSize();
         timer_slider.setPreferredSize(new Dimension(d.width+200,d.height+25));
         
+        
         //Formatting
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.HORIZONTAL;
         c.fill = GridBagConstraints.HORIZONTAL;
-        
-        //Adding to Panel
         add(intervalLabel,c);
         add(timer_slider,c);
         add(okButton);
         add(cancelButton);
+        
         
         okButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
