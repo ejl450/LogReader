@@ -45,7 +45,6 @@ import javax.swing.SwingUtilities;
 
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
 public class LogReader extends JPanel implements ActionListener {
-    
     //create GUI fields
     protected JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
@@ -56,20 +55,15 @@ public class LogReader extends JPanel implements ActionListener {
     
     //Misc
     private final static String newline = "\n";
-    private String File_Name_0;
+    private String fileName;
     private int lineCount= 0;
     private int newLineCount= 0;
     private String logType;
     
-    //Timer/Delay
-    static int delay = 5*60*1000; //5 min(s)
+    //Timer and Delay
+    static int delay = 0;
+    static int calculationDelay = 0;
     private Timer timer = new Timer(delay, this);
-    
-    //Slider Info
-    static final int INT_min = 0;
-    static final int INT_max = 60;
-    static final int INT_init = 5;
-    static int calculationDelay;
     
     //Date Information
     public static Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
@@ -78,6 +72,7 @@ public class LogReader extends JPanel implements ActionListener {
     public static int year = calendar.get(Calendar.YEAR);
 
 
+    
     // This class, "LogReader" is used to create the gridlayout for the text area as well as create the button layout in the application.
     // Also shown below is the code for each button and what happens when the button is pressed. The three buttons being used are Current
     // Date (Returns the current date), Input Date (Returns user input date), and Start (Starts the log).
@@ -87,21 +82,20 @@ public class LogReader extends JPanel implements ActionListener {
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
+        
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
         intervalField.setEditable(false);
         intervalField.setHorizontalAlignment(10);
         intervalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        intervalField.setText("Time (mins): " + String.format("%02d", delay));
-             
-        
+        intervalField.setText("Time (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));  
+  
         //Build File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
-        JMenuItem exportMenuItem = new JMenuItem("Export");
-               
+        JMenuItem exportMenuItem = new JMenuItem("Export");   
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
         functionLog.setMnemonic(KeyEvent.VK_A);
@@ -116,16 +110,14 @@ public class LogReader extends JPanel implements ActionListener {
         group.add(functionLog);
         group.add(projectBridgeLog);
         group.add(prosightLog);
-        
         //Build Clear Menu
         JMenu clearField = new JMenu("Clear");
         JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
         JMenuItem clearAllItem = new JMenuItem("Clear Text and Close");
-        
         //Build Interval Menu
         JMenu intervalSlider = new JMenu("Refresh Interval");
         JMenuItem interval = new JMenuItem("Interval");
-        
+        //Group Components Together
         fileMenu.add(startMenuItem);
         fileMenu.add(dateMenuItem);
         fileMenu.add(exportMenuItem);
@@ -139,6 +131,7 @@ public class LogReader extends JPanel implements ActionListener {
         menuBar.add(clearField);
         menuBar.add(intervalSlider);
      
+        
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -182,8 +175,8 @@ public class LogReader extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 fileNavigator.setSelectedFile(new File(".xml"));
                 int returnVal = fileNavigator.showSaveDialog(exportMenuItem);
+                File file = fileNavigator.getSelectedFile();
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fileNavigator.getSelectedFile();
                     BufferedWriter bw;
                 try {
                     bw = new BufferedWriter(new FileWriter(file));
@@ -197,7 +190,12 @@ public class LogReader extends JPanel implements ActionListener {
                 }
                 }
                 textArea.setCaretPosition(textArea.getDocument().getLength());
-
+                Desktop dt = Desktop.getDesktop();
+                try {
+                    dt.open(file);
+                } catch (IOException ex) {
+                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         interval.addActionListener(new ActionListener() {
@@ -207,7 +205,7 @@ public class LogReader extends JPanel implements ActionListener {
         });
         startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                fileName = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
                 delay = calculationDelay*1000*60;
@@ -225,7 +223,6 @@ public class LogReader extends JPanel implements ActionListener {
                 textArea.setText(null);
             }
         });
-        
         //Reference setDateFrame 'okButton'
         logreader.setDateFrame.okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -235,7 +232,7 @@ public class LogReader extends JPanel implements ActionListener {
                 year = logreader.setDateFrame.defaultYear;
 
                 //set file name
-                File_Name_0 = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                fileName = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
                 lastUpdatedField.setText("Press Start to retrieve the " + logType + " Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year) + newline);
                 
                 //set delay
@@ -265,18 +262,18 @@ public class LogReader extends JPanel implements ActionListener {
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-               
+              
         
-        File f = new File(File_Name_0);
+        File f = new File(fileName);
         if(!f.isFile()){
-            lastUpdatedField.setText(newline + "File " + File_Name_0 + " cannot be found, log is not generated for today!"+newline);
+            lastUpdatedField.setText(newline + "File " + fileName + " cannot be found, log is not generated for today!"+newline);
             skipUpdate = true;
         }
         else{
             try{
-                fis = new FileInputStream(File_Name_0);
+                fis = new FileInputStream(fileName);
                 isr = new InputStreamReader(fis);
-                br = new BufferedReader(new FileReader(File_Name_0));
+                br = new BufferedReader(new FileReader(fileName));
                 LineNumberReader reader = new LineNumberReader(br);
 
                 while((i=fis.read())!=-1){
@@ -292,9 +289,9 @@ public class LogReader extends JPanel implements ActionListener {
                        textArea.append(line+newline);
                        newLineCount=lineCount;
                     }
-                }
-                
+                }               
             }catch(Exception ex){
+                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
             }finally{
                 if(fis!=null)
                     try {
