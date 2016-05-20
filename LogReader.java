@@ -59,6 +59,7 @@ public class LogReader extends JPanel implements ActionListener {
     private int lineCount= 0;
     private int newLineCount= 0;
     private String logType;
+    private String serverType;
     
     //Timer and Delay
     static int delay = 0;
@@ -95,8 +96,17 @@ public class LogReader extends JPanel implements ActionListener {
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
+        JMenuItem exportMenuItem = new JMenuItem("Export");
+        //Option Menu
+        JMenu optionMenu = new JMenu("Options");
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
-        JMenuItem exportMenuItem = new JMenuItem("Export");   
+        JMenuItem intervalMenuItem = new JMenuItem("Interval");
+        JMenu logTypeMenu = new JMenu("Log Type");
+        JMenu serverTypeMenu = new JMenu("Server Type");
+        JMenuItem clearMenu = new JMenu("Clear");
+        JMenuItem clearTextSubMenuItem = new JMenuItem("Clear Text Only");
+        JMenuItem clearAllSubMenuItem = new JMenuItem("Clear Text and Stop");
+        
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
         functionLog.setMnemonic(KeyEvent.VK_A);
@@ -107,30 +117,37 @@ public class LogReader extends JPanel implements ActionListener {
         JRadioButton prosightLog = new JRadioButton("Prosight Log");
         prosightLog.setMnemonic(KeyEvent.VK_C);
         prosightLog.setActionCommand("Prosight Log");
-        ButtonGroup group = new ButtonGroup();
-        group.add(functionLog);
-        group.add(projectBridgeLog);
-        group.add(prosightLog);
-        //Build Clear Menu
-        JMenu clearField = new JMenu("Clear");
-        JMenuItem clearTextItem = new JMenuItem("Clear Text Only");
-        JMenuItem clearAllItem = new JMenuItem("Clear Text and Stop");
-        //Build Interval Menu
-        JMenu intervalSlider = new JMenu("Refresh Interval");
-        JMenuItem interval = new JMenuItem("Interval");
+        ButtonGroup group0 = new ButtonGroup();
+        group0.add(functionLog);
+        group0.add(projectBridgeLog);
+        group0.add(prosightLog);
+        JRadioButton productionServer = new JRadioButton("Production Server");
+        functionLog.setMnemonic(KeyEvent.VK_A);
+        functionLog.setActionCommand("Production Server");
+        JRadioButton testServer = new JRadioButton("Test Server");
+        projectBridgeLog.setMnemonic(KeyEvent.VK_B);
+        projectBridgeLog.setActionCommand("Test Server");
+        ButtonGroup group1 = new ButtonGroup();
+        group1.add(productionServer);
+        group1.add(testServer);
+
         //Group Components Together
         fileMenu.add(startMenuItem);
-        fileMenu.add(dateMenuItem);
         fileMenu.add(exportMenuItem);
-        fileMenu.add(functionLog);
-        fileMenu.add(projectBridgeLog);
-        fileMenu.add(prosightLog); 
-        clearField.add(clearTextItem);
-        clearField.add(clearAllItem);
-        intervalSlider.add(interval);
+        optionMenu.add(dateMenuItem);
+        optionMenu.add(intervalMenuItem);
+        optionMenu.add(logTypeMenu);
+        logTypeMenu.add(functionLog);
+        logTypeMenu.add(projectBridgeLog);
+        logTypeMenu.add(prosightLog);
+        optionMenu.add(serverTypeMenu);
+        serverTypeMenu.add(productionServer);
+        serverTypeMenu.add(testServer);
+        optionMenu.add(clearMenu);
+        clearMenu.add(clearTextSubMenuItem);
+        clearMenu.add(clearAllSubMenuItem);  
         menuBar.add(fileMenu);
-        menuBar.add(clearField);
-        menuBar.add(intervalSlider);
+        menuBar.add(optionMenu);
      
         
         //Add Components to this panel.
@@ -149,22 +166,34 @@ public class LogReader extends JPanel implements ActionListener {
         add(intervalField,d);
 
         
+        testServer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                serverType = "wvs";
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+            }
+        });
+        productionServer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                serverType = "wpp";
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+            }
+        });  
         functionLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "function";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });  
         projectBridgeLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "ProjectBridge";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         prosightLog.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logType = "prosight";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             }
         });
         dateMenuItem.addActionListener(new ActionListener() {
@@ -174,7 +203,7 @@ public class LogReader extends JPanel implements ActionListener {
         });   
         exportMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileNavigator.setSelectedFile(new File(logType+" log"+"_"+month+"_"+day+"_"+year+".xml"));
+                fileNavigator.setSelectedFile(new File(logType + " log" + "_" + month + "_" + day + "_" + year + "_" + serverType +".xml"));
                 int returnVal = fileNavigator.showSaveDialog(exportMenuItem);
                 File file = fileNavigator.getSelectedFile();
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -199,21 +228,21 @@ public class LogReader extends JPanel implements ActionListener {
                 }
             }
         });
-        interval.addActionListener(new ActionListener() {
+        intervalMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 createAndShowIntervalGUI();
             }
         });
         startMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileName = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+                fileName = "\\\\cp-" + serverType + "-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
                 delay = calculationDelay*1000*60;
                 timer.setDelay(delay);
             }
         });
-        clearAllItem.addActionListener(new ActionListener() {
+        clearAllSubMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //reset GUI
                 lastUpdatedField.setText("Text cleared and program stopped");
@@ -223,7 +252,7 @@ public class LogReader extends JPanel implements ActionListener {
                 timer.stop();
             }
         });
-        clearTextItem.addActionListener(new ActionListener() {
+        clearTextSubMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 lastUpdatedField.setText("Text cleared");
                 textArea.setText(null);
@@ -238,8 +267,8 @@ public class LogReader extends JPanel implements ActionListener {
                 year = logreader.setDateFrame.defaultYear;
 
                 //set file name
-                fileName = "\\\\cp-wpp-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
-                lastUpdatedField.setText("Press Start to retrieve the " + logType + " Log for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year) + newline);
+                fileName = "\\\\cp-" + serverType + "-ap119d\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+                lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
                 
                 //set delay
                 calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
@@ -272,7 +301,7 @@ public class LogReader extends JPanel implements ActionListener {
         
         File f = new File(fileName);
         if(!f.isFile()){
-            lastUpdatedField.setText(newline + "File " + fileName + " cannot be found, log is not generated for today!"+newline);
+            lastUpdatedField.setText(newline + "File " + fileName + " cannot be found, log is not generated for the date!"+newline);
             skipUpdate = true;
         }
         else{
@@ -376,4 +405,3 @@ public class LogReader extends JPanel implements ActionListener {
         });
     }
 }
-
