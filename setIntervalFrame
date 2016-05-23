@@ -1,34 +1,10 @@
 package logreader;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.File;
 import javax.swing.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.logging.Level; 
-import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
-import java.util.Scanner;
-import java.util.TimerTask;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import static jdk.nashorn.internal.objects.NativeDate.setYear;
 
 
 
@@ -70,21 +46,17 @@ class setIntervalFrame extends JPanel {
         add(cancelButton);
         
         
-        okButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                setIntervalFrameDelay = ((int)timer_slider.getValue());
-                logreader.LogReader.intervalField.setText("Time (mins): " + String.format("%02d", setIntervalFrameDelay));
-                setVisible(false);
-                Window dialog = SwingUtilities.windowForComponent(okButton);
-                dialog.dispose();
-            }          
+        okButton.addActionListener((ActionEvent e) -> {
+            setIntervalFrameDelay = ((int)timer_slider.getValue());
+            logreader.LogReader.intervalField.setText("Time (mins): " + String.format("%02d", setIntervalFrameDelay));
+            setVisible(false);
+            Window dialog = SwingUtilities.windowForComponent(okButton);
+            dialog.dispose();          
         });  
-        cancelButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                setVisible(false);
-                Window dialog = SwingUtilities.windowForComponent(okButton);
-                dialog.dispose();
-            }          
+        cancelButton.addActionListener((ActionEvent e) -> {
+            setVisible(false);
+            Window dialog = SwingUtilities.windowForComponent(okButton);
+            dialog.dispose();          
         });
     }
 }
