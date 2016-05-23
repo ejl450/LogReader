@@ -6,32 +6,13 @@
 package logreader;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.File;
 import javax.swing.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
-import java.util.Scanner;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import static jdk.nashorn.internal.objects.NativeDate.setYear;
 
 /**
  *
@@ -39,22 +20,22 @@ import static jdk.nashorn.internal.objects.NativeDate.setYear;
  */
 class setDateFrame extends JPanel implements PropertyChangeListener {
     //Labels and default values for user to input the date of log
-    private JLabel yearLabel;
-    private JLabel monthLabel;
-    private JLabel dayLabel;
+    private final JLabel yearLabel;
+    private final JLabel monthLabel;
+    private final JLabel dayLabel;
     public static int defaultYear = 2016;
     public static int defaultMonth = 05;
     public static int defaultDay = 9;
     
     //set date String Labels
-    private static String yearLabelString = "Year (yyyy): ";
-    private static String monthLabelString = "Month (mm): ";
-    private static String dayLabelString = "Day (dd): ";
+    private final static String yearLabelString = "Year (yyyy): ";
+    private final static String monthLabelString = "Month (mm): ";
+    private final static String dayLabelString = "Day (dd): ";
     
     ////set date data entry fields
-    private JFormattedTextField setYear;
-    private JFormattedTextField setMonth;
-    private JFormattedTextField setDay;
+    private final JFormattedTextField setYear;
+    private final JFormattedTextField setMonth;
+    private final JFormattedTextField setDay;
     
     //format the data entry fields
     private NumberFormat yearFormat;
@@ -80,15 +61,15 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
         
         //Create and set up text fields
         setYear = new JFormattedTextField(yearFormat);
-        setYear.setValue(new Integer(defaultYear));
+        setYear.setValue(defaultYear);
         setYear.setColumns(10);
         setYear.addPropertyChangeListener("value", this);
         setMonth = new JFormattedTextField(monthFormat);
-        setMonth.setValue(new Integer(defaultMonth));
+        setMonth.setValue(defaultMonth);
         setMonth.setColumns(10);
         setMonth.addPropertyChangeListener("value", this);
         setDay = new JFormattedTextField(dayFormat);
-        setDay.setValue(new Integer(defaultDay));
+        setDay.setValue(defaultDay);
         setDay.setColumns(10);
         setDay.addPropertyChangeListener("value", this);
         
@@ -121,21 +102,16 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
         add(fieldPane, BorderLayout.LINE_END);
         
         
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int inputMonth = defaultMonth;
-                int inputDay = defaultDay;
-                int inputYear = defaultYear;
-                Window dialog = SwingUtilities.windowForComponent(okButton);
-                dialog.dispose();
-            }
+        okButton.addActionListener((ActionEvent e) -> {
+            int inputMonth = defaultMonth;
+            int inputDay = defaultDay;
+            int inputYear = defaultYear;
+            Window dialog = SwingUtilities.windowForComponent(okButton);
+            dialog.dispose();
         });   
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                Window dialog = SwingUtilities.windowForComponent(cancelButton);
-                dialog.dispose();
-            }
+        cancelButton.addActionListener((ActionEvent e) -> {
+            Window dialog = SwingUtilities.windowForComponent(cancelButton);
+            dialog.dispose();
         });   
     }
     
@@ -161,6 +137,7 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
    
     
     
+    @Override
     public void propertyChange(PropertyChangeEvent e){
         Object source = e.getSource();
         
