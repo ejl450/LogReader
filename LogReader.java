@@ -31,15 +31,18 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 
 
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
 public class LogReader extends JPanel implements ActionListener {
     //create GUI fields
-    protected JTextField textField;
+    protected static JTextField textField;
     private final JMenuBar menuBar = new JMenuBar();
-    protected JTextArea textArea;
+    protected static JTextArea textArea;
     public static JTextField lastUpdatedField = new JTextField(40);
     public static JTextField intervalField = new JTextField();
     public static JFileChooser fileNavigator = new JFileChooser();
@@ -62,6 +65,9 @@ public class LogReader extends JPanel implements ActionListener {
     public static int day = calendar.get(Calendar.DATE);
     public static int month = calendar.get(Calendar.MONTH) + 1;
     public static int year = calendar.get(Calendar.YEAR);
+    
+    //Search Info
+    public static int pos;
 
 
     
@@ -81,13 +87,18 @@ public class LogReader extends JPanel implements ActionListener {
         intervalField.setEditable(false);
         intervalField.setHorizontalAlignment(10);
         intervalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        intervalField.setText("Refresh Interval (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));  
+        intervalField.setText("Refresh Interval (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay)); 
+        
+        
+        JButton searchButton = new JButton("Search");
   
+        
         //Build File menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
         JMenuItem exportMenuItem = new JMenuItem("Export");
+        
         //Option Menu
         JMenu optionMenu = new JMenu("Options");
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
@@ -124,6 +135,7 @@ public class LogReader extends JPanel implements ActionListener {
 
         //Group Components Together
         fileMenu.add(startMenuItem);
+        fileMenu.addSeparator();
         fileMenu.add(exportMenuItem);
         optionMenu.add(dateMenuItem);
         optionMenu.add(intervalMenuItem);
@@ -134,14 +146,12 @@ public class LogReader extends JPanel implements ActionListener {
         optionMenu.add(serverTypeMenu);
         serverTypeMenu.add(productionServer);
         serverTypeMenu.add(testServer);
+        optionMenu.addSeparator();
         optionMenu.add(clearMenu);
         clearMenu.add(clearTextSubMenuItem);
         clearMenu.add(clearAllSubMenuItem);  
         menuBar.add(fileMenu);
         menuBar.add(optionMenu);
-     
-        
-        JButton searchButton = new JButton("Search");
         
         
         //Add Components to this panel.
@@ -161,16 +171,44 @@ public class LogReader extends JPanel implements ActionListener {
         add(intervalField,d);
                 
         
+        searchButton.setToolTipText("Press this button to search through the log.");
+        fileMenu.setToolTipText("This middle button does not react when you click it.");
+        optionMenu.setToolTipText("This middle button does not react when you click it.");
+        startMenuItem.setToolTipText("This middle button does not react when you click it.");
+        exportMenuItem.setToolTipText("This middle button does not react when you click it.");
+        intervalMenuItem.setToolTipText("This middle button does not react when you click it.");
+        dateMenuItem.setToolTipText("This middle button does not react when you click it.");
+        logTypeMenu.setToolTipText("This middle button does not react when you click it.");
+        serverTypeMenu.setToolTipText("This middle button does not react when you click it.");
+        clearMenu.setToolTipText("This middle button does not react when you click it.");
+        clearTextSubMenuItem.setToolTipText("This middle button does not react when you click it.");
+        clearAllSubMenuItem.setToolTipText("This middle button does not react when you click it.");
+        
+        
         searchButton.addActionListener((ActionEvent e) -> {
             final String inputValue = JOptionPane.showInputDialog("Find What?");
-            final int l1 = textArea.getText().indexOf(inputValue);
-            final int l2 = inputValue.length();
+            int offset = textArea.getText().indexOf(inputValue);
+            int  length= inputValue.length();
+            String text = textArea.getText();
+            Highlighter h = textArea.getHighlighter();
+            h.removeAllHighlights();
+            final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
             
-            if (l1 == -1) {
+            if (offset == -1){
                 JOptionPane.showMessageDialog(null, "Search Value Not Found");
-            } else {
-                textArea.select(l1, l2+l1);
             }
+            int index = text.indexOf(inputValue);
+
+            while ( index >= 0 ) {
+                try {
+                    int len = inputValue.length();
+                    h.addHighlight(index, index+len, painter);
+                    index = text.indexOf(inputValue, index+len);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            textArea.select(offset, offset+length);
         });
         testServer.addActionListener((ActionEvent e) -> {
             serverType = "wvs";
@@ -285,7 +323,8 @@ public class LogReader extends JPanel implements ActionListener {
         
         File f = new File(fileName);
         if(!f.isFile()){
-            lastUpdatedField.setText(newline + "File " + fileName + " cannot be found, log is not generated for the date!"+newline);
+            JOptionPane.showMessageDialog(null, "File " + fileName + " cannot be found, log is not generated for the date!");
+            lastUpdatedField.setText("File " + fileName + " cannot be found, log is not generated for the date!");
             skipUpdate = true;
         }
         else{
@@ -356,7 +395,7 @@ public class LogReader extends JPanel implements ActionListener {
         setDateFrame.pack();
         setDateFrame.setVisible(true);
     }
-
+    
     
 
     // Create the GUI and show it.  For thread safety, this method should be invoked from the
