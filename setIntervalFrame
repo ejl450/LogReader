@@ -48,7 +48,7 @@ class setIntervalFrame extends JPanel {
         
         okButton.addActionListener((ActionEvent e) -> {
             setIntervalFrameDelay = ((int)timer_slider.getValue());
-            logreader.LogReader.intervalField.setText("Time (mins): " + String.format("%02d", setIntervalFrameDelay));
+            logreader.LogReader.intervalField.setText("Refresh Interval (mins): " + String.format("%02d", setIntervalFrameDelay));
             setVisible(false);
             Window dialog = SwingUtilities.windowForComponent(okButton);
             dialog.dispose();          
