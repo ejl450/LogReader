@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
+import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -23,9 +24,10 @@ class setDateFrame extends JPanel implements PropertyChangeListener {
     private final JLabel yearLabel;
     private final JLabel monthLabel;
     private final JLabel dayLabel;
-    public static int defaultYear = 2016;
-    public static int defaultMonth = 05;
-    public static int defaultDay = 9;
+    public final static Calendar now = Calendar.getInstance();
+    public static int defaultYear = now.get(Calendar.YEAR);
+    public static int defaultMonth = now.get(Calendar.MONTH) + 1;
+    public static int defaultDay = now.get(Calendar.DAY_OF_MONTH);
     
     //set date String Labels
     private final static String yearLabelString = "Year (yyyy): ";
