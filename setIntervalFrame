@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import static logreader.LogReader.lastUpdatedField;
 
 
 
@@ -16,8 +17,8 @@ class setIntervalFrame extends JPanel {
     //Constants
     static final int INT_min = 0;
     static final int INT_max = 60;
-    static final int INT_init = 5;
-    public static int setIntervalFrameDelay = 5;
+    static final int INT_init = 30;
+    public static int setIntervalFrameDelay = 30;
     
     public setIntervalFrame() {
         super(new GridBagLayout());
@@ -49,6 +50,7 @@ class setIntervalFrame extends JPanel {
         okButton.addActionListener((ActionEvent e) -> {
             setIntervalFrameDelay = ((int)timer_slider.getValue());
             logreader.LogReader.intervalField.setText("Refresh Interval (mins): " + String.format("%02d", setIntervalFrameDelay));
+            lastUpdatedField.setText("The refresh interval set to: " + setIntervalFrameDelay + " Minutes");
             setVisible(false);
             Window dialog = SwingUtilities.windowForComponent(okButton);
             dialog.dispose();          
