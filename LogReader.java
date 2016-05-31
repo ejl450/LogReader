@@ -2,7 +2,8 @@
 * PPM Error Log
 * Edmund Lynn
 * Akash Shah
-* 05/25/2016
+* 05/27/2016
+* VERSION 0.9
  */
 
 
@@ -32,9 +33,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
 
 
 
@@ -42,33 +40,31 @@ import javax.swing.text.Highlighter;
 public class LogReader extends JPanel implements ActionListener {
     //create GUI fields 
     protected static JTextField textField;
-    private final JMenuBar menuBar = new JMenuBar();
+    public static final JMenuBar menuBar = new JMenuBar();
     protected static JTextArea textArea;
     public static JTextField lastUpdatedField = new JTextField(40);
     public static JTextField intervalField = new JTextField();
     public static JFileChooser fileNavigator = new JFileChooser();
-    
+    public static JMenuItem exportNotesMenuItem = new JMenuItem("Export with Notes");
+    public static JMenuItem exportMenuItem = new JMenuItem("Export");  
     //Misc
-    private static final String versionNumber = "Version 0.8";
-    private final static String newline = "\n";
-    private String fileName;
-    private int lineCount= 0;
-    private int newLineCount= 0;
-    private String logType;
-    private String serverType;
-    private String directoryType;
-    
+    public static final String versionNumber = "Version 0.9";
+    public final static String newline = "\n";
+    public static String fileName;
+    public static int lineCount= 0;
+    public static int newLineCount= 0;
+    public static String logType = "prosight";
+    public static String serverType = "wpp";
+    public static String directoryType = "d";
     //Timer and Delay
-    static int delay = 0;
-    static int calculationDelay = 0;
-    private Timer timer = new Timer(delay, this);
-    
+    public static int delay = 0;
+    public static int calculationDelay = 0;
+    public Timer timer = new Timer(delay, this);    
     //Date Information
     public final static Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
     public static int day = calendar.get(Calendar.DATE);
     public static int month = calendar.get(Calendar.MONTH) + 1;
     public static int year = calendar.get(Calendar.YEAR);
-    
     //Search Info
     public static int pos;
     
@@ -82,9 +78,7 @@ public class LogReader extends JPanel implements ActionListener {
         textArea = new JTextArea(30, 65);
         textArea.setEditable(false);
         textArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        
-        
+        JScrollPane scrollPane = new JScrollPane(textArea);    
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
         intervalField.setEditable(false);
@@ -97,24 +91,20 @@ public class LogReader extends JPanel implements ActionListener {
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
-        JMenuItem exportMenuItem = new JMenuItem("Export");
         JMenuItem newWindowMenuItem = new JMenuItem("New Window");
-        JMenuItem informationMenuItem = new JMenuItem("Information");
-        
+        JMenuItem helpMenuItem = new JMenuItem("Help");
         //Clear Menu
         JMenu editMenu = new JMenu("Edit");
         JMenuItem findMenuItem = new JMenuItem("Find");
         JMenuItem clearMenuItem = new JMenuItem("Clear Text");
         JMenuItem restartMenuItem = new JMenuItem("Restart");   
-        
         //Option Menu
         JMenu optionMenu = new JMenu("Options");
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
         JMenuItem intervalMenuItem = new JMenuItem("Interval");
         JMenu logTypeMenu = new JMenu("Log Type");
         JMenu serverTypeMenu = new JMenu("Server Type");
-        JMenu directoryTypeMenu = new JMenu("Directory");
-        
+        JMenu directoryTypeMenu = new JMenu("Directory");  
         //Create the radio buttons.
         JRadioButton functionLog = new JRadioButton("Function Log");
         functionLog.setActionCommand("function Log");
@@ -122,6 +112,7 @@ public class LogReader extends JPanel implements ActionListener {
         projectBridgeLog.setActionCommand("Project Bridge Log");
         JRadioButton prosightLog = new JRadioButton("Prosight Log");
         prosightLog.setActionCommand("Prosight Log");
+        prosightLog.setSelected(true);
         ButtonGroup group0 = new ButtonGroup();
         group0.add(functionLog);
         group0.add(projectBridgeLog);
@@ -130,25 +121,29 @@ public class LogReader extends JPanel implements ActionListener {
         productionServer.setActionCommand("Production Server");
         JRadioButton testServer = new JRadioButton("Test Server");
         testServer.setActionCommand("Test Server");
+        productionServer.setSelected(true);
         ButtonGroup group1 = new ButtonGroup();
         group1.add(productionServer);
         group1.add(testServer);
         JRadioButton cDirectory = new JRadioButton("Front End Server");
-        productionServer.setActionCommand("Front End Server");
+        cDirectory.setActionCommand("Front End Server");
         JRadioButton dDirectory = new JRadioButton("Back End Server");
-        testServer.setActionCommand("Back End Server");
+        dDirectory.setActionCommand("Back End Server");
+        dDirectory.setSelected(true);
         ButtonGroup group2 = new ButtonGroup();
         group2.add(cDirectory);
         group2.add(dDirectory);
 
+        
         //Group Components Together
         fileMenu.add(startMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(exportMenuItem);
+        fileMenu.add(exportNotesMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(newWindowMenuItem);
         fileMenu.addSeparator();
-        fileMenu.add(informationMenuItem);
+        fileMenu.add(helpMenuItem);
         optionMenu.add(dateMenuItem);
         optionMenu.add(intervalMenuItem);
         optionMenu.add(logTypeMenu);
@@ -167,9 +162,7 @@ public class LogReader extends JPanel implements ActionListener {
         editMenu.add(restartMenuItem);  
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-        menuBar.add(optionMenu);
-        
-        
+        menuBar.add(optionMenu);          
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -189,6 +182,8 @@ public class LogReader extends JPanel implements ActionListener {
         //Set menu item and radio button hints
         startMenuItem.setToolTipText("Start the log reader");
         exportMenuItem.setToolTipText("Export log into .XML format");
+        exportNotesMenuItem.setToolTipText("Export log into .XML format wiht notes appended to each error");
+        helpMenuItem.setToolTipText("Information/Tutorials on how to use the log reader");
         findMenuItem.setToolTipText("Search through the log");
         clearMenuItem.setToolTipText("Clear text from the log program");
         restartMenuItem.setToolTipText("Clear and stop running the log program");
@@ -198,10 +193,9 @@ public class LogReader extends JPanel implements ActionListener {
         functionLog.setToolTipText("Set the log type to Function");
         projectBridgeLog.setToolTipText("Set the log type to Project Bridge");
         productionServer.setToolTipText("Set the server type to Production");
-        testServer.setToolTipText("Set the server type to Test");
-       
-        
+        testServer.setToolTipText("Set the server type to Test");  
         //Setup shortcut keys for quick actions
+        helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
         findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         startMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         restartMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
@@ -209,21 +203,16 @@ public class LogReader extends JPanel implements ActionListener {
         intervalMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
         dateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
         exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+        exportNotesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         newWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         
-        
+
         //Setup action listeners
-        informationMenuItem.addActionListener((ActionEvent e) -> {
-            String tutorial = "Tutorial: " + newline + "In order to start the program, first you need to setup the log to be looked at. This requires steps such " + newline +
-                    "as applying the date to be looked at, the log type to be searched for, the server type to grab, and the directory type to be set to. " + newline +
-                    "After all of this has been accomplished, the program can be ran by pressing the Start Program item under the file menu." + newline + newline;
-            String export = "Export: " + newline + "In order to export the program to an .XML File, the program first has to be ran. After this is accomplished, " + newline +
-                    "the program can be exported by pressing the Export Item under the file menu. When exporting the file, a file dialog box will show up which will " + newline +
-                    "allow you to pick where to save the exported file as well as the file name which is already predefined. After exporting, the file will automatically open to " + newline +
-                    "the chosen default program to view .XML files in. It is suggested to set the default program to excel to have the proper formatted table." + newline + newline;
-            String authorInfo = "Authors: " + newline + "Edmund Lynn" + newline + "Akash Shah" + newline + newline;
-            String versionInfo = newline + versionNumber + newline;
-            JOptionPane.showMessageDialog(null, (tutorial + export + authorInfo + versionInfo), "Information", JOptionPane.INFORMATION_MESSAGE);
+        exportNotesMenuItem.addActionListener((ActionEvent e) -> {
+            logreader.exportFile.exportWithNotes(); 
+        });
+        helpMenuItem.addActionListener((ActionEvent e) -> {
+            logreader.helpAndFind.helpItem();
         });
         cDirectory.addActionListener((ActionEvent e) -> {
             directoryType = "c";
@@ -237,29 +226,7 @@ public class LogReader extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(null, "Feature is not finished yet!", "Error", JOptionPane.ERROR_MESSAGE);
         });
         findMenuItem.addActionListener((ActionEvent e) -> {
-            final String inputValue = JOptionPane.showInputDialog("Find What?");
-            int offset = textArea.getText().indexOf(inputValue);
-            int  length= inputValue.length();
-            String text = textArea.getText();
-            Highlighter h = textArea.getHighlighter();
-            h.removeAllHighlights();
-            final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
-            
-            if (offset == -1){
-                JOptionPane.showMessageDialog(null, "Search Value Not Found", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            int index = text.indexOf(inputValue);
-
-            while ( index >= 0 ) {
-                try {
-                    int len = inputValue.length();
-                    h.addHighlight(index, index+len, painter);
-                    index = text.indexOf(inputValue, index+len);
-                } catch (BadLocationException ex) {
-                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            textArea.select(offset, offset+length);
+            logreader.helpAndFind.findItems();
         });
         testServer.addActionListener((ActionEvent e) -> {
             serverType = "wvs";
@@ -285,35 +252,7 @@ public class LogReader extends JPanel implements ActionListener {
             createAndShowDateMenuGUI();
         });
         exportMenuItem.addActionListener((ActionEvent e) -> {
-            fileNavigator.setSelectedFile(new File(logType + " log" + "_" + month + "_" + day + "_" + year + "_" + serverType + "_" + directoryType +".xml"));
-            int returnVal = fileNavigator.showSaveDialog(exportMenuItem);
-            File file = fileNavigator.getSelectedFile();
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                BufferedWriter bw;
-                try {
-                    bw = new BufferedWriter(new FileWriter(file));
-                    if ("prosight".equals(logType)){
-                        String andSymbol = "&";
-                        String ampersand = "&amp;";
-                        textArea.setText(textArea.getText().replaceAll(andSymbol, ampersand));
-                    }    
-                    String exportText = textArea.getText();
-                    bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<data>" + exportText + "</data>");
-                    
-                    bw.flush();
-                    bw.close();
-                }               
-                catch (IOException e1)
-                {
-                }
-            }
-            textArea.setCaretPosition(textArea.getDocument().getLength());
-            Desktop dt = Desktop.getDesktop();
-            try {
-                dt.open(file);
-            } catch (IOException ex) {
-                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            logreader.exportFile.exportFile();
         });
         intervalMenuItem.addActionListener((ActionEvent e) -> {
             createAndShowIntervalGUI();
@@ -377,8 +316,7 @@ public class LogReader extends JPanel implements ActionListener {
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-              
-        
+               
         File f = new File(fileName);
         if(!f.isFile()){
             JOptionPane.showMessageDialog(null, "File " + fileName + " cannot be found, log is not generated for the date!","Error", JOptionPane.ERROR_MESSAGE);
@@ -460,18 +398,16 @@ public class LogReader extends JPanel implements ActionListener {
         //Create and set up the window.
         JFrame frame = new JFrame("Primavera Portfolio Management Log Reader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
-        
+
         //Add contents to the window.
         frame.add(new LogReader());
  
-        
         //Display the window.
         frame.setVisible(true);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
  
     
@@ -508,7 +444,7 @@ public class LogReader extends JPanel implements ActionListener {
     public static void main(String[]args) throws MalformedURLException{
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.        
-        splashScreen(); 
+        splashScreen();
         javax.swing.SwingUtilities.invokeLater(() -> {
             createAndShowGUI();
         });
