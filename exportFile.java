@@ -1,6 +1,8 @@
 package logreader;
 
 import java.awt.Desktop;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,10 +12,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import static logreader.LogReader.fileNavigator;
-import static logreader.LogReader.newline;
 import static logreader.LogReader.textArea;
 
 
@@ -53,14 +58,41 @@ public class exportFile extends LogReader{
                             if (m1.find()) {
                             errorText = m1.group(1);
                             }
+                            //
+                            JTextArea errorTextArea = new JTextArea(18,50);
+                            errorTextArea.setText(errorText);
+                            errorTextArea.setEditable(false);
+                            errorTextArea.setLineWrap(true);
+                            JTextArea inputTextArea = new JTextArea(18,50);
+                            inputTextArea.setLineWrap(true);
+                            JScrollPane scrollError = new JScrollPane(errorTextArea);
+                            JScrollPane scrollInput = new JScrollPane(inputTextArea);  
+                            JPanel panel = new JPanel(new GridBagLayout());
+                            GridBagConstraints c = new GridBagConstraints();
+                            c.gridwidth = GridBagConstraints.REMAINDER;
+                            c.fill = GridBagConstraints.HORIZONTAL;
+                            GridBagConstraints d = new GridBagConstraints();
+                            d.fill = GridBagConstraints.BOTH;
+                            d.gridwidth = GridBagConstraints.REMAINDER;
+                            d.weightx = 1.0;
+                            d.weighty = 1.0;
+                            panel.add(new JLabel("Error for the Given Log:"),c);
+                            panel.add(scrollError,d);
+                            panel.add(new JLabel("Input Notes Below:"),c);
+                            panel.add(scrollInput,d);
                             UIManager.put("OptionPane.okButtonText", "Next/Skip");
-                            String inputNotes = JOptionPane.showInputDialog("Input Notes for the Given Error:" + newline + newline + errorText + newline + newline);
-                            userNotes = "Notes=\"" + inputNotes + "\"";
-                            if (inputNotes.equals("null")){
-                                System.exit(0);
+                            
+                            int result = JOptionPane.showConfirmDialog(null, panel, "Annotation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            String inputNotes = inputTextArea.getText();
+                            
+                            if ((result == JOptionPane.CANCEL_OPTION) || (result == JOptionPane.CLOSED_OPTION)){
                                 break;
                             }
-                            m.appendReplacement(sb, userNotes);
+                            else{
+                                userNotes = "Notes=\"" + inputNotes + "\"";
+                                m.appendReplacement(sb, userNotes);
+                            }
+                            //
                         }
                         m.appendTail(sb);
 
@@ -97,13 +129,39 @@ public class exportFile extends LogReader{
                             if (m1.find()) {
                             errorText = m1.group(1);
                             }
-                            String inputNotes = JOptionPane.showInputDialog("Input Notes for the Given Error:" + newline + newline + errorText + newline + newline);
-                            String userNotes = "</description>" + "<notes>" + inputNotes + "</notes>";
-                            if (inputNotes.equals("null")){
-                                System.exit(0);
+                            JTextArea errorTextArea = new JTextArea(18,50);
+                            errorTextArea.setText(errorText);
+                            errorTextArea.setEditable(false);
+                            errorTextArea.setLineWrap(true);
+                            JTextArea inputTextArea = new JTextArea(18,50);
+                            inputTextArea.setLineWrap(true);
+                            JScrollPane scrollError = new JScrollPane(errorTextArea);
+                            JScrollPane scrollInput = new JScrollPane(inputTextArea);  
+                            JPanel panel = new JPanel(new GridBagLayout());
+                            GridBagConstraints c = new GridBagConstraints();
+                            c.gridwidth = GridBagConstraints.REMAINDER;
+                            c.fill = GridBagConstraints.HORIZONTAL;
+                            GridBagConstraints d = new GridBagConstraints();
+                            d.fill = GridBagConstraints.BOTH;
+                            d.gridwidth = GridBagConstraints.REMAINDER;
+                            d.weightx = 1.0;
+                            d.weighty = 1.0;
+                            panel.add(new JLabel("Error for the Given Log:"),c);
+                            panel.add(scrollError,d);
+                            panel.add(new JLabel("Input Notes Below:"),c);
+                            panel.add(scrollInput,d);
+                            UIManager.put("OptionPane.okButtonText", "Next/Skip");
+                            
+                            int result = JOptionPane.showConfirmDialog(null, panel, "Annotation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            String inputNotes = inputTextArea.getText();
+                            
+                            if ((result == JOptionPane.CANCEL_OPTION) || (result == JOptionPane.CLOSED_OPTION)){
                                 break;
                             }
-                            m.appendReplacement(sb, userNotes);
+                            else{
+                                String userNotes = "</description>" + "<notes>" + inputNotes + "</notes>";
+                                m.appendReplacement(sb, userNotes);
+                            }
                         }
                         m.appendTail(sb);
 
@@ -140,13 +198,39 @@ public class exportFile extends LogReader{
                             if (m1.find()) {
                             errorText = m1.group(1);
                             }
-                            String inputNotes = JOptionPane.showInputDialog("Input Notes for the Given Error:" + newline + newline + errorText + newline + newline);
-                            String userNotes = "<NOTES>" + inputNotes + "</NOTES>" + "</FunctionExecution>";
-                            if (inputNotes.equals("null")){
-                                System.exit(0);
+                            JTextArea errorTextArea = new JTextArea(18,50);
+                            errorTextArea.setText(errorText);
+                            errorTextArea.setEditable(false);
+                            errorTextArea.setLineWrap(true);
+                            JTextArea inputTextArea = new JTextArea(18,50);
+                            inputTextArea.setLineWrap(true);
+                            JScrollPane scrollError = new JScrollPane(errorTextArea);
+                            JScrollPane scrollInput = new JScrollPane(inputTextArea);  
+                            JPanel panel = new JPanel(new GridBagLayout());
+                            GridBagConstraints c = new GridBagConstraints();
+                            c.gridwidth = GridBagConstraints.REMAINDER;
+                            c.fill = GridBagConstraints.HORIZONTAL;
+                            GridBagConstraints d = new GridBagConstraints();
+                            d.fill = GridBagConstraints.BOTH;
+                            d.gridwidth = GridBagConstraints.REMAINDER;
+                            d.weightx = 1.0;
+                            d.weighty = 1.0;
+                            panel.add(new JLabel("Error for the Given Log:"),c);
+                            panel.add(scrollError,d);
+                            panel.add(new JLabel("Input Notes Below:"),c);
+                            panel.add(scrollInput,d);
+                            UIManager.put("OptionPane.okButtonText", "Next/Skip");
+                            
+                            int result = JOptionPane.showConfirmDialog(null, panel, "Annotation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            String inputNotes = inputTextArea.getText();
+                            
+                            if ((result == JOptionPane.CANCEL_OPTION) || (result == JOptionPane.CLOSED_OPTION)){
                                 break;
                             }
-                            m.appendReplacement(sb, userNotes);
+                            else{
+                                String userNotes = "<NOTES>" + inputNotes + "</NOTES>" + "</FunctionExecution>";
+                                m.appendReplacement(sb, userNotes);
+                            }
                         }
                         m.appendTail(sb);
 
