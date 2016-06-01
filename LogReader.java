@@ -2,8 +2,8 @@
 * PPM Error Log
 * Edmund Lynn
 * Akash Shah
-* 05/27/2016
-* VERSION 0.9
+* 06/01/2016
+* VERSION 1.0.0
  */
 
 
@@ -48,7 +48,7 @@ public class LogReader extends JPanel implements ActionListener {
     public static JMenuItem exportNotesMenuItem = new JMenuItem("Export with Notes");
     public static JMenuItem exportMenuItem = new JMenuItem("Export");  
     //Misc
-    public static final String versionNumber = "Version 0.9";
+    public static final String versionNumber = "Version 1.0.0";
     public final static String newline = "\n";
     public static String fileName;
     public static int lineCount= 0;
@@ -65,6 +65,9 @@ public class LogReader extends JPanel implements ActionListener {
     public static int day = calendar.get(Calendar.DATE);
     public static int month = calendar.get(Calendar.MONTH) + 1;
     public static int year = calendar.get(Calendar.YEAR);
+    public final static int todayDay = calendar.get(Calendar.DATE);
+    public final static int todayMonth = calendar.get(Calendar.MONTH) + 1;
+    public final static int todayYear = calendar.get(Calendar.YEAR);
     //Search Info
     public static int pos;
     
@@ -91,7 +94,6 @@ public class LogReader extends JPanel implements ActionListener {
         JMenu fileMenu = new JMenu("File");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
-        JMenuItem newWindowMenuItem = new JMenuItem("New Window");
         JMenuItem helpMenuItem = new JMenuItem("Help");
         //Clear Menu
         JMenu editMenu = new JMenu("Edit");
@@ -140,8 +142,6 @@ public class LogReader extends JPanel implements ActionListener {
         fileMenu.addSeparator();
         fileMenu.add(exportMenuItem);
         fileMenu.add(exportNotesMenuItem);
-        fileMenu.addSeparator();
-        fileMenu.add(newWindowMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(helpMenuItem);
         optionMenu.add(dateMenuItem);
@@ -193,7 +193,7 @@ public class LogReader extends JPanel implements ActionListener {
         functionLog.setToolTipText("Set the log type to Function");
         projectBridgeLog.setToolTipText("Set the log type to Project Bridge");
         productionServer.setToolTipText("Set the server type to Production");
-        testServer.setToolTipText("Set the server type to Test");  
+        testServer.setToolTipText("Set the server type to Test");
         //Setup shortcut keys for quick actions
         helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
         findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
@@ -204,9 +204,8 @@ public class LogReader extends JPanel implements ActionListener {
         dateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
         exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
         exportNotesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-        newWindowMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         
-
+        
         //Setup action listeners
         exportNotesMenuItem.addActionListener((ActionEvent e) -> {
             logreader.exportFile.exportWithNotes(); 
@@ -221,9 +220,6 @@ public class LogReader extends JPanel implements ActionListener {
         dDirectory.addActionListener((ActionEvent e) -> {
             directoryType = "d";
             lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-        });
-        newWindowMenuItem.addActionListener((ActionEvent e) -> {
-            JOptionPane.showMessageDialog(null, "Feature is not finished yet!", "Error", JOptionPane.ERROR_MESSAGE);
         });
         findMenuItem.addActionListener((ActionEvent e) -> {
             logreader.helpAndFind.findItems();
@@ -271,10 +267,14 @@ public class LogReader extends JPanel implements ActionListener {
             lineCount=0;
             newLineCount=0;
             timer.stop();
+            UIManager.put("OptionPane.okButtonText", "OK");
+            JOptionPane.showMessageDialog(null, "The program has been restarted successfully!");             
         });
         clearMenuItem.addActionListener((ActionEvent e) -> {
             lastUpdatedField.setText("Text cleared");
             textArea.setText(null);
+            UIManager.put("OptionPane.okButtonText", "OK");
+            JOptionPane.showMessageDialog(null, "The text area has been cleared successfully!");
         });
         //Reference setDateFrame 'okButton'
         logreader.setDateFrame.okButton.addActionListener(new ActionListener() {
@@ -319,9 +319,37 @@ public class LogReader extends JPanel implements ActionListener {
                
         File f = new File(fileName);
         if(!f.isFile()){
+            UIManager.put("OptionPane.okButtonText", "OK");
             JOptionPane.showMessageDialog(null, "File " + fileName + " cannot be found, log is not generated for the date!","Error", JOptionPane.ERROR_MESSAGE);
             lastUpdatedField.setText("File " + fileName + " cannot be found, log is not generated for the date!");
             skipUpdate = true;
+        }
+        else if((day != todayDay) || (month != todayMonth) || (year != todayYear)){
+            try{
+                timer.stop();
+                skipUpdate = true;
+                fis = new FileInputStream(fileName);
+                isr = new InputStreamReader(fis);
+                br = new BufferedReader(new FileReader(fileName));
+                LineNumberReader reader = new LineNumberReader(br);
+                while((i=fis.read())!=-1){
+                   line = reader.readLine();
+                   lineCount=reader.getLineNumber();
+                    if(line==null || lineCount<=newLineCount){
+                        reader.setLineNumber(lineCount);
+                    }else{
+
+                       textArea.append(line+newline);
+                       newLineCount=lineCount;
+                    }
+                }
+                fis.close();
+                lastUpdatedField.setText(newline + fileName + newline);
+                lineCount=0;
+                newLineCount=0;
+            }catch(Exception ex){
+                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else{
             try{
@@ -333,29 +361,28 @@ public class LogReader extends JPanel implements ActionListener {
                    line = reader.readLine();
                    lineCount=reader.getLineNumber();
                     if(line==null || lineCount<=newLineCount){
-                    timer.start();
-                    reader.setLineNumber(lineCount);
-                    
+                        timer.start();
+                        reader.setLineNumber(lineCount);
                     }else{
 
                        textArea.append(line+newline);
                        newLineCount=lineCount;
                     }
-                }               
+                }
             }catch(Exception ex){
                 Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
             }finally{
-                if(fis!=null)
+                if(fis!=null){
                     try {
                         fis.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                    }catch (IOException ex) {
+                        Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
         if (skipUpdate == false){
-        lastUpdatedField.setText(newline+"Last time updated: " + dateFormat.format(date)+newline);
-        //Code ends here
+            lastUpdatedField.setText(newline+ "Last time updated: " + dateFormat.format(date) + newline);
         }
     }
  
@@ -394,9 +421,8 @@ public class LogReader extends JPanel implements ActionListener {
 
     // Create the GUI and show it.  For thread safety, this method should be invoked from the
     // event dispatch thread.
-    private static void createAndShowGUI(){
+    private static void createAndShowGUI(JFrame frame){
         //Create and set up the window.
-        JFrame frame = new JFrame("Primavera Portfolio Management Log Reader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add contents to the window.
@@ -407,7 +433,6 @@ public class LogReader extends JPanel implements ActionListener {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
  
     
@@ -430,6 +455,7 @@ public class LogReader extends JPanel implements ActionListener {
         }
         window.setVisible(false);
         window.dispose();
+        UIManager.put("OptionPane.okButtonText", "OK");
         JOptionPane.showMessageDialog(null, "Welcome to Primervera Portfolio Management Error Log Reader!" + newline + "For information on how to use the program, go to the file menu." + newline + "Press OK if ready to begin." ,"Welcome", JOptionPane.INFORMATION_MESSAGE);
         try {
             Thread.sleep(1200);
@@ -446,7 +472,8 @@ public class LogReader extends JPanel implements ActionListener {
         //creating and showing this application's GUI.        
         splashScreen();
         javax.swing.SwingUtilities.invokeLater(() -> {
-            createAndShowGUI();
+            JFrame frame = new JFrame("Primavera Portfolio Management Log Reader " + versionNumber);
+            createAndShowGUI(frame);
         });
     }
 }
