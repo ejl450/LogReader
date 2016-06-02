@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -14,6 +15,7 @@ import static logreader.LogReader.textArea;
 
 public class helpAndFind extends LogReader{
     static void findItems(){
+            UIManager.put("OptionPane.okButtonText", "Find");
             final String inputValue = JOptionPane.showInputDialog("Find What?");
             int offset = textArea.getText().indexOf(inputValue);
             int  length= inputValue.length();
@@ -23,6 +25,7 @@ public class helpAndFind extends LogReader{
             final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
             
             if (offset == -1){
+                UIManager.put("OptionPane.okButtonText", "OK");
                 JOptionPane.showMessageDialog(null, "Search Value Not Found", "Error", JOptionPane.ERROR_MESSAGE);
             }
             int index = text.indexOf(inputValue);
@@ -52,6 +55,7 @@ public class helpAndFind extends LogReader{
                     "the notes will be appended to each error in a table like format for easy visibility for any user to read. " + newline + newline + newline;
             String authorInfo = "Authors: " + newline + "Edmund Lynn" + newline + "Akash Shah" + newline + newline + newline;
             String versionInfo = newline + versionNumber + newline;
+            UIManager.put("OptionPane.okButtonText", "OK");
             JOptionPane.showMessageDialog(null, (tutorial + export + exportNotes + authorInfo + versionInfo), "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 }
