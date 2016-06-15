@@ -2,8 +2,8 @@
 * PPM Error Log
 * Edmund Lynn
 * Akash Shah
-* 06/01/2016
-* VERSION 1.0.0
+* 06/15/2016
+* VERSION 1.1.0
  */
 
 
@@ -44,11 +44,11 @@ public class LogReader extends JPanel implements ActionListener {
     protected static JTextArea textArea;
     public static JTextField lastUpdatedField = new JTextField(40);
     public static JTextField intervalField = new JTextField();
-    public static JFileChooser fileNavigator = new JFileChooser();
+    public static JFileChooser fileNavigator = new JFileChooser("Z:\\PDelivery\\CrossRegion\\CrossRegion3\\2279_projectmanagement\\Intern_Co-Op\\Akash's Documents\\Co-Op 2016\\Assignments\\Multi-Month Work\\P6 PPM Bridge");
     public static JMenuItem exportNotesMenuItem = new JMenuItem("Export with Notes");
     public static JMenuItem exportMenuItem = new JMenuItem("Export");  
     //Misc
-    public static final String versionNumber = "Version 1.0.0";
+    public static final String versionNumber = "Version 1.1.0";
     public final static String newline = "\n";
     public static String fileName;
     public static int lineCount= 0;
@@ -81,6 +81,8 @@ public class LogReader extends JPanel implements ActionListener {
         textArea = new JTextArea(30, 65);
         textArea.setEditable(false);
         textArea.setLineWrap(true);
+        textArea.setForeground(Color.gray);
+        textArea.setBackground(Color.black);
         JScrollPane scrollPane = new JScrollPane(textArea);    
         lastUpdatedField.setEditable(false);
         lastUpdatedField.setHorizontalAlignment(10);
@@ -194,6 +196,8 @@ public class LogReader extends JPanel implements ActionListener {
         projectBridgeLog.setToolTipText("Set the log type to Project Bridge");
         productionServer.setToolTipText("Set the server type to Production");
         testServer.setToolTipText("Set the server type to Test");
+        cDirectory.setToolTipText("Set the server type to Front End");
+        dDirectory.setToolTipText("Set the server type to Back End");
         //Setup shortcut keys for quick actions
         helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
         findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
@@ -308,8 +312,8 @@ public class LogReader extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent evt) {
         InputStream fis = null;
-        InputStreamReader isr;
-        BufferedReader br;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
         String line;
         int i = 0;
         boolean skipUpdate = false;        
@@ -344,6 +348,8 @@ public class LogReader extends JPanel implements ActionListener {
                     }
                 }
                 fis.close();
+                isr.close();
+                br.close();
                 lastUpdatedField.setText(newline + fileName + newline);
                 lineCount=0;
                 newLineCount=0;
@@ -375,6 +381,8 @@ public class LogReader extends JPanel implements ActionListener {
                 if(fis!=null){
                     try {
                         fis.close();
+                        isr.close();
+                        br.close();
                     }catch (IOException ex) {
                         Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
                     }
