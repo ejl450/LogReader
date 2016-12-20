@@ -3,7 +3,7 @@
 * Edmund Lynn
 * Akash Shah
 * 06/15/2016
-* VERSION 1.1.0
+* VERSION 2.0.1
  */
 
 
@@ -29,26 +29,44 @@ import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import static java.lang.String.join;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.regex.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import static logreader.setLogType.inputDirectory;
+import static logreader.setLogType.inputLog;
+import static logreader.setLogType.inputServer;
+import static logreader.setLogType.setDirectory;
+import static logreader.setLogType.setLog;
+import static logreader.setLogType.setServer;
 
 
 
 // Below is listed the class definition for the entire code as well as some global constants and buttons that are used throughout the code.
 public class LogReader extends JPanel implements ActionListener {
     //create GUI fields 
+    public static JFrame setLogType;
+    public static JFrame frontLogAnalysis;
+    public static JFrame backLogAnalysis;
+    public static JFrame setDateFrame;
+    public static JFrame setIntervalFrame;
     protected static JTextField textField;
     public static final JMenuBar menuBar = new JMenuBar();
     protected static JTextArea textArea;
-    public static JTextField lastUpdatedField = new JTextField(40);
+    public static JTextField lastUpdatedField = new JTextField();
     public static JTextField intervalField = new JTextField();
-    public static JFileChooser fileNavigator = new JFileChooser("Z:\\PDelivery\\CrossRegion\\CrossRegion3\\2279_projectmanagement\\Intern_Co-Op\\Akash's Documents\\Co-Op 2016\\Assignments\\Multi-Month Work\\P6 PPM Bridge");
+    public static JTextField bridgeField = new JTextField();
+    public static JFileChooser fileNavigator = new JFileChooser();
     public static JMenuItem exportNotesMenuItem = new JMenuItem("Export with Notes");
-    public static JMenuItem exportMenuItem = new JMenuItem("Export");  
+    public static JMenuItem exportMenuItem = new JMenuItem("Export"); 
     //Misc
-    public static final String versionNumber = "Version 1.1.0";
+    public static final String versionNumber = "Version 2.1.0";
     public final static String newline = "\n";
     public static String fileName;
     public static int lineCount= 0;
@@ -60,6 +78,9 @@ public class LogReader extends JPanel implements ActionListener {
     public static int delay = 0;
     public static int calculationDelay = 0;
     public Timer timer = new Timer(delay, this);    
+    public static int hours = 0;
+    public static int minutes = 0;
+    public static int numwind = 0;
     //Date Information
     public final static Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
     public static int day = calendar.get(Calendar.DATE);
@@ -85,59 +106,43 @@ public class LogReader extends JPanel implements ActionListener {
         textArea.setBackground(Color.black);
         JScrollPane scrollPane = new JScrollPane(textArea);    
         lastUpdatedField.setEditable(false);
-        lastUpdatedField.setHorizontalAlignment(10);
+        lastUpdatedField.setHorizontalAlignment(SwingConstants.CENTER);
         intervalField.setEditable(false);
-        intervalField.setHorizontalAlignment(10);
-        intervalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        intervalField.setText("Refresh Interval (mins): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));
+        intervalField.setHorizontalAlignment(SwingConstants.CENTER);
+        intervalField.setText("--Set Frame Width to be this wide by default--");
+        intervalField.setText("Refresh Interval (Minutes): " + String.format("%02d", logreader.setIntervalFrame.setIntervalFrameDelay));
+        bridgeField.setEditable(false);
+        bridgeField.setHorizontalAlignment(SwingConstants.CENTER);
+        bridgeField.setText("--Set Frame Width to be this wide by default--");
+        bridgeField.setText("Duration: " + String.format("%02d", hours) + " hr(s) and " + String.format("%02d", minutes) + " min(s)");
+
+        
+        //Set Initial File Name
+        fileName = "\\\\cp-" + serverType + "-ap119" + directoryType + "\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
   
         
         //Build File menu
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu(" File  ");
         JMenuItem startMenuItem = new JMenuItem("Start Program");
         startMenuItem.addActionListener(this);
-        JMenuItem helpMenuItem = new JMenuItem("Help");
+        JMenuItem helpMenuItem = new JMenuItem("Tutorial");
         //Clear Menu
-        JMenu editMenu = new JMenu("Edit");
+        JMenu editMenu = new JMenu(" Edit  ");
         JMenuItem findMenuItem = new JMenuItem("Find");
         JMenuItem clearMenuItem = new JMenuItem("Clear Text");
         JMenuItem restartMenuItem = new JMenuItem("Restart");   
         //Option Menu
-        JMenu optionMenu = new JMenu("Options");
+        JMenu optionMenu = new JMenu(" Setup  ");
         JMenuItem dateMenuItem = new JMenuItem("Set Date");
-        JMenuItem intervalMenuItem = new JMenuItem("Interval");
-        JMenu logTypeMenu = new JMenu("Log Type");
-        JMenu serverTypeMenu = new JMenu("Server Type");
-        JMenu directoryTypeMenu = new JMenu("Directory");  
-        //Create the radio buttons.
-        JRadioButton functionLog = new JRadioButton("Function Log");
-        functionLog.setActionCommand("function Log");
-        JRadioButton projectBridgeLog = new JRadioButton("Project Bridge Log");
-        projectBridgeLog.setActionCommand("Project Bridge Log");
-        JRadioButton prosightLog = new JRadioButton("Prosight Log");
-        prosightLog.setActionCommand("Prosight Log");
-        prosightLog.setSelected(true);
-        ButtonGroup group0 = new ButtonGroup();
-        group0.add(functionLog);
-        group0.add(projectBridgeLog);
-        group0.add(prosightLog);
-        JRadioButton productionServer = new JRadioButton("Production Server");
-        productionServer.setActionCommand("Production Server");
-        JRadioButton testServer = new JRadioButton("Test Server");
-        testServer.setActionCommand("Test Server");
-        productionServer.setSelected(true);
-        ButtonGroup group1 = new ButtonGroup();
-        group1.add(productionServer);
-        group1.add(testServer);
-        JRadioButton cDirectory = new JRadioButton("Front End Server");
-        cDirectory.setActionCommand("Front End Server");
-        JRadioButton dDirectory = new JRadioButton("Back End Server");
-        dDirectory.setActionCommand("Back End Server");
-        dDirectory.setSelected(true);
-        ButtonGroup group2 = new ButtonGroup();
-        group2.add(cDirectory);
-        group2.add(dDirectory);
-
+        JMenuItem intervalMenuItem = new JMenuItem("Set Interval");
+        JMenuItem logMenuItem = new JMenuItem("Set Log Type");
+        
+        //Tools
+        JMenu toolsMenu = new JMenu(" Tools  ");
+        JMenuItem frontAnalysisMenuItem = new JMenuItem("Front End Log Analysis (ap119c)");
+        JMenuItem backAnalysisMenuItem = new JMenuItem("Back End Log Analysis (ap119d)");
+        JMenuItem openDirectoryMenuItem = new JMenuItem("Open File Directory");
+        
         
         //Group Components Together
         fileMenu.add(startMenuItem);
@@ -148,105 +153,99 @@ public class LogReader extends JPanel implements ActionListener {
         fileMenu.add(helpMenuItem);
         optionMenu.add(dateMenuItem);
         optionMenu.add(intervalMenuItem);
-        optionMenu.add(logTypeMenu);
-        logTypeMenu.add(functionLog);
-        logTypeMenu.add(projectBridgeLog);
-        logTypeMenu.add(prosightLog);
-        optionMenu.add(serverTypeMenu);
-        serverTypeMenu.add(productionServer);
-        serverTypeMenu.add(testServer);
-        optionMenu.add(directoryTypeMenu);
-        directoryTypeMenu.add(cDirectory);
-        directoryTypeMenu.add(dDirectory);
+        optionMenu.add(logMenuItem);
         editMenu.add(findMenuItem);
         editMenu.addSeparator();
         editMenu.add(clearMenuItem);
-        editMenu.add(restartMenuItem);  
+        editMenu.add(restartMenuItem);
+        toolsMenu.add(frontAnalysisMenuItem);
+        toolsMenu.add(backAnalysisMenuItem);
+        toolsMenu.addSeparator();
+        toolsMenu.add(openDirectoryMenuItem);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-        menuBar.add(optionMenu);          
+        menuBar.add(optionMenu);  
+        menuBar.add(toolsMenu);
         //Add Components to this panel.
+        GridBagConstraints b = new GridBagConstraints();
+        b.gridwidth = GridBagConstraints.REMAINDER;
+        b.fill = GridBagConstraints.BOTH;
+        b.weightx = 1.0;
+        b.weighty = 1.0;
         GridBagConstraints c = new GridBagConstraints();
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.HORIZONTAL;
-        GridBagConstraints d = new GridBagConstraints();
-        d.gridwidth = GridBagConstraints.REMAINDER;
-        d.fill = GridBagConstraints.HORIZONTAL;
-        add(menuBar);
+        GridBagConstraints d1 = new GridBagConstraints();
+        d1.anchor = GridBagConstraints.FIRST_LINE_START;
+        d1.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints d2 = new GridBagConstraints();
+        d2.anchor = GridBagConstraints.LINE_START;
+        GridBagConstraints d3 = new GridBagConstraints();
+        d3.anchor = GridBagConstraints.LINE_END;
+        add(menuBar,d1);
         add(lastUpdatedField,c);
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-        add(scrollPane, c);
-        add(intervalField,d);
+        add(scrollPane,b);
+        add(bridgeField,d2);
+        add(intervalField,d3);
                 
         
         //Set menu item and radio button hints
         startMenuItem.setToolTipText("Start the log reader");
         exportMenuItem.setToolTipText("Export log into .XML format");
-        exportNotesMenuItem.setToolTipText("Export log into .XML format wiht notes appended to each error");
+        exportNotesMenuItem.setToolTipText("Export log into .XML format with notes appended to each error");
+        frontAnalysisMenuItem.setToolTipText("Shows brief analysis of two front end production logs");
+        backAnalysisMenuItem.setToolTipText("Shows brief analysis of three back end production logs");
         helpMenuItem.setToolTipText("Information/Tutorials on how to use the log reader");
         findMenuItem.setToolTipText("Search through the log");
         clearMenuItem.setToolTipText("Clear text from the log program");
         restartMenuItem.setToolTipText("Clear and stop running the log program");
         intervalMenuItem.setToolTipText("Select number of minutes before refreshing the log");
         dateMenuItem.setToolTipText("Select the date of the log to be read");
-        prosightLog.setToolTipText("Set the log type to Prosight");
-        functionLog.setToolTipText("Set the log type to Function");
-        projectBridgeLog.setToolTipText("Set the log type to Project Bridge");
-        productionServer.setToolTipText("Set the server type to Production");
-        testServer.setToolTipText("Set the server type to Test");
-        cDirectory.setToolTipText("Set the server type to Front End");
-        dDirectory.setToolTipText("Set the server type to Back End");
+        logMenuItem.setToolTipText("Select the type of log to be read");
+        openDirectoryMenuItem.setToolTipText("Open current file location in Explorer");
         //Setup shortcut keys for quick actions
-        helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
+        helpMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+        frontAnalysisMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.ALT_MASK));
+        backAnalysisMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
         findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         startMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        restartMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-        clearMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+        restartMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+        clearMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
         intervalMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
         dateMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+        logMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
         exportMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
         exportNotesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-        
+        openDirectoryMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         
         //Setup action listeners
+        openDirectoryMenuItem.addActionListener((ActionEvent e) -> {
+            try { 
+                Runtime.getRuntime().exec("explorer.exe /select," + fileName);
+            } catch (IOException ex) {
+                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         exportNotesMenuItem.addActionListener((ActionEvent e) -> {
             logreader.exportFile.exportWithNotes(); 
         });
         helpMenuItem.addActionListener((ActionEvent e) -> {
             logreader.helpAndFind.helpItem();
         });
-        cDirectory.addActionListener((ActionEvent e) -> {
-            directoryType = "c";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+        frontAnalysisMenuItem.addActionListener((ActionEvent e) -> {
+            createAndShowFrontLogAnalysisGUI();
         });
-        dDirectory.addActionListener((ActionEvent e) -> {
-            directoryType = "d";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+        backAnalysisMenuItem.addActionListener((ActionEvent e) -> {
+            createAndShowBackLogAnalysisGUI();
         });
         findMenuItem.addActionListener((ActionEvent e) -> {
             logreader.helpAndFind.findItems();
         });
-        testServer.addActionListener((ActionEvent e) -> {
-            serverType = "wvs";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType +  " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-        });
-        productionServer.addActionListener((ActionEvent e) -> {
-            serverType = "wpp";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType +  " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-        });  
-        functionLog.addActionListener((ActionEvent e) -> {
-            logType = "function";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-        });  
-        projectBridgeLog.addActionListener((ActionEvent e) -> {
-            logType = "ProjectBridge";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType +  " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
-        });
-        prosightLog.addActionListener((ActionEvent e) -> {
-            logType = "prosight";
-            lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server in the " + directoryType +  " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
+        logMenuItem.addActionListener((ActionEvent e) -> {
+            createAndShowLogMenuGUI();
+            setLog.setText(inputLog);
+            setServer.setText(inputServer);
+            setDirectory.setText(inputDirectory);
         });
         dateMenuItem.addActionListener((ActionEvent e) -> {
             createAndShowDateMenuGUI();
@@ -258,6 +257,15 @@ public class LogReader extends JPanel implements ActionListener {
             createAndShowIntervalGUI();
         });
         startMenuItem.addActionListener((ActionEvent e) -> {
+            String logType0 = inputLog;
+            String serverType0 = inputServer;
+            String directoryType0 = inputDirectory;
+            
+            if(logType0 != null || serverType0 != null || directoryType0 != null){
+                logType = inputLog;
+                serverType = inputServer;
+                directoryType = inputDirectory;
+            }
             fileName = "\\\\cp-" + serverType + "-ap119" + directoryType + "\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
             lastUpdatedField.setText("Press Start to retrieve the " + logType + " log in the " + serverType + " server for the following date: " + String.format("%02d", month) + "/" + String.format("%02d", day) + "/" + String.format("%02d", year)+newline);
             calculationDelay = logreader.setIntervalFrame.setIntervalFrameDelay;
@@ -265,13 +273,59 @@ public class LogReader extends JPanel implements ActionListener {
             timer.setDelay(delay);
         });
         restartMenuItem.addActionListener((ActionEvent e) -> {
-            //reset GUI
             lastUpdatedField.setText("Text cleared and program stopped");
             textArea.setText(null);
             lineCount=0;
             newLineCount=0;
             timer.stop();
             UIManager.put("OptionPane.okButtonText", "OK");
+            logType = "prosight";
+            serverType = "wpp";
+            directoryType = "d";
+            logreader.setLogType.inputLog = logType;
+            logreader.setLogType.inputServer = serverType;
+            logreader.setLogType.inputDirectory = directoryType;
+            logreader.setDateFrame.defaultDay = calendar.get(Calendar.DATE);
+            logreader.setDateFrame.defaultMonth = calendar.get(Calendar.MONTH) + 1;
+            logreader.setDateFrame.defaultYear = calendar.get(Calendar.YEAR);
+            day = calendar.get(Calendar.DATE);
+            month = calendar.get(Calendar.MONTH) + 1;
+            year = calendar.get(Calendar.YEAR);
+            hours = 0;
+            minutes = 0;
+            numwind = 0;
+            fileName = "\\\\cp-" + serverType + "-ap119" + directoryType + "\\log\\" + logType + "_" + String.format("%02d", year) + "_" + String.format("%02d", month) + "_" + String.format("%02d", day) + ".log";
+            bridgeField.setText("Duration: " + String.format("%02d", hours) + " hr(s) and " + String.format("%02d", minutes) + " min(s)");
+            logreader.backLogAnalysis.pbhours = 0;
+            logreader.backLogAnalysis.pbminutes = 0;
+            logreader.backLogAnalysis.pbstarthours = 0;
+            logreader.backLogAnalysis.pbstartminutes = 0;
+            logreader.backLogAnalysis.pbendhours = 0;
+            logreader.backLogAnalysis.pbendminutes = 0;
+            logreader.backLogAnalysis.funhours = 0;
+            logreader.backLogAnalysis.funminutes = 0;
+            logreader.backLogAnalysis.funstarthours = 0;
+            logreader.backLogAnalysis.funstartminutes = 0;
+            logreader.backLogAnalysis.funendhours = 0;
+            logreader.backLogAnalysis.funendminutes = 0;
+            logreader.backLogAnalysis.prohours = 0;
+            logreader.backLogAnalysis.prominutes = 0;
+            logreader.backLogAnalysis.prostarthours = 0;
+            logreader.backLogAnalysis.prostartminutes = 0;
+            logreader.backLogAnalysis.proendhours = 0;
+            logreader.backLogAnalysis.proendminutes = 0;
+            logreader.frontLogAnalysis.pbhours = 0;
+            logreader.frontLogAnalysis.pbminutes = 0;
+            logreader.frontLogAnalysis.pbstarthours = 0;
+            logreader.frontLogAnalysis.pbstartminutes = 0;
+            logreader.frontLogAnalysis.pbendhours = 0;
+            logreader.frontLogAnalysis.pbendminutes = 0;
+            logreader.frontLogAnalysis.prohours = 0;
+            logreader.frontLogAnalysis.prominutes = 0;
+            logreader.frontLogAnalysis.prostarthours = 0;
+            logreader.frontLogAnalysis.prostartminutes = 0;
+            logreader.frontLogAnalysis.proendhours = 0;
+            logreader.frontLogAnalysis.proendminutes = 0;
             JOptionPane.showMessageDialog(null, "The program has been restarted successfully!");             
         });
         clearMenuItem.addActionListener((ActionEvent e) -> {
@@ -280,7 +334,6 @@ public class LogReader extends JPanel implements ActionListener {
             UIManager.put("OptionPane.okButtonText", "OK");
             JOptionPane.showMessageDialog(null, "The text area has been cleared successfully!");
         });
-        //Reference setDateFrame 'okButton'
         logreader.setDateFrame.okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -320,90 +373,247 @@ public class LogReader extends JPanel implements ActionListener {
         //Below is the code that allows for the current dates log to be shown as well as the error message if there is no log 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-               
-        File f = new File(fileName);
-        if(!f.isFile()){
-            UIManager.put("OptionPane.okButtonText", "OK");
-            JOptionPane.showMessageDialog(null, "File " + fileName + " cannot be found, log is not generated for the date!","Error", JOptionPane.ERROR_MESSAGE);
-            lastUpdatedField.setText("File " + fileName + " cannot be found, log is not generated for the date!");
-            skipUpdate = true;
-        }
-        else if((day != todayDay) || (month != todayMonth) || (year != todayYear)){
-            try{
-                timer.stop();
+        try{       
+            File f = new File(fileName);
+            long bytes = f.length();
+            if (bytes>10000000){    
+                int result = JOptionPane.showConfirmDialog(null, "The chosen log is over 10,000 KB which will take time to load. Would you like to continue?", "File Size to Big", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+                if ((result == JOptionPane.CANCEL_OPTION) || (result == JOptionPane.CLOSED_OPTION)){
+                    f = null;
+                }
+            }
+            if(!f.isFile()){
+                UIManager.put("OptionPane.okButtonText", "OK");
+                JOptionPane.showMessageDialog(null, "File " + fileName + " cannot be found, log is not generated for the date!","Error", JOptionPane.ERROR_MESSAGE);
+                lastUpdatedField.setText("File " + fileName + " cannot be found, log is not generated for the date!");
                 skipUpdate = true;
-                fis = new FileInputStream(fileName);
-                isr = new InputStreamReader(fis);
-                br = new BufferedReader(new FileReader(fileName));
-                LineNumberReader reader = new LineNumberReader(br);
-                while((i=fis.read())!=-1){
-                   line = reader.readLine();
-                   lineCount=reader.getLineNumber();
-                    if(line==null || lineCount<=newLineCount){
-                        reader.setLineNumber(lineCount);
-                    }else{
-
-                       textArea.append(line+newline);
-                       newLineCount=lineCount;
-                    }
-                }
-                fis.close();
-                isr.close();
-                br.close();
-                lastUpdatedField.setText(newline + fileName + newline);
-                lineCount=0;
-                newLineCount=0;
-            }catch(Exception ex){
-                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else{
-            try{
-                fis = new FileInputStream(fileName);
-                isr = new InputStreamReader(fis);
-                br = new BufferedReader(new FileReader(fileName));
-                LineNumberReader reader = new LineNumberReader(br);
-                while((i=fis.read())!=-1){
-                   line = reader.readLine();
-                   lineCount=reader.getLineNumber();
-                    if(line==null || lineCount<=newLineCount){
-                        timer.start();
-                        reader.setLineNumber(lineCount);
-                    }else{
+            else if((day != todayDay) || (month != todayMonth) || (year != todayYear)){
+                try{
+                    timer.stop();
+                    skipUpdate = true;
+                    fis = new FileInputStream(fileName);
+                    isr = new InputStreamReader(fis);
+                    br = new BufferedReader(new FileReader(fileName));
+                    LineNumberReader reader = new LineNumberReader(br);
+                    while((i=fis.read())!=-1){
+                       line = reader.readLine();
+                       lineCount=reader.getLineNumber();
+                        if(line==null || lineCount<=newLineCount){
+                            reader.setLineNumber(lineCount);
+                        }else{
 
-                       textArea.append(line+newline);
-                       newLineCount=lineCount;
+                           textArea.append(line+newline);
+                           newLineCount=lineCount;
+                        }
                     }
-                }
-            }catch(Exception ex){
-                Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
-            }finally{
-                if(fis!=null){
-                    try {
-                        fis.close();
-                        isr.close();
-                        br.close();
-                    }catch (IOException ex) {
-                        Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    fis.close();
+                    isr.close();
+                    br.close();
+                    lastUpdatedField.setText(newline + fileName + newline);
+                    lineCount=0;
+                    newLineCount=0;
+                }catch(Exception ex){
+                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
-        if (skipUpdate == false){
-            lastUpdatedField.setText(newline+ "Last time updated: " + dateFormat.format(date) + newline);
+            else{
+                try{
+                    fis = new FileInputStream(fileName);
+                    isr = new InputStreamReader(fis);
+                    br = new BufferedReader(new FileReader(fileName));
+                    LineNumberReader reader = new LineNumberReader(br);
+                    while((i=fis.read())!=-1){
+                       line = reader.readLine();
+                       lineCount=reader.getLineNumber();
+                        if(line==null || lineCount<=newLineCount){
+                            timer.start();
+                            reader.setLineNumber(lineCount);
+                        }else{
+
+                           textArea.append(line+newline);
+                           newLineCount=lineCount;
+                        }
+                    }
+                }catch(Exception ex){
+                    Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                }finally{
+                    if(fis!=null){
+                        try {
+                            fis.close();
+                            isr.close();
+                            br.close();
+                        }catch (IOException ex) {
+                            Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+            if(skipUpdate == false){
+                lastUpdatedField.setText(newline+ "Last time updated: " + dateFormat.format(date) + newline);
+            }
+            if("ProjectBridge".equals(logType)){
+                if(f.isFile()){
+                    String logText = textArea.getText();
+                    String timeTag = "<time>";
+                    String timeEndTag = "</time>";
+                    String testValue = "<time>xx:xx:xx XX</time>";
+                    String timeValue;
+                    ArrayList<String> timeMatrix = new ArrayList<>();
+                    int len = testValue.length();
+                    int index = logText.indexOf(timeTag);
+                    while ( index >= 0 ) {
+                        timeValue = logText.substring(index, index + len);
+                        timeMatrix.add(timeValue);
+                        index = logText.indexOf(timeTag, index+len);
+                    }
+                    int sizeof = timeMatrix.size();
+                    String firstTime = timeMatrix.get(0);
+                    String lastTime = timeMatrix.get(sizeof-1);
+                    int firstHour = Integer.parseInt(firstTime.substring(6, 8));
+                    int lastHour = Integer.parseInt(lastTime.substring(6, 8));
+                    int firstMin = Integer.parseInt(firstTime.substring(9, 11));
+                    int lastMin = Integer.parseInt(lastTime.substring(9, 11));
+                    hours = lastHour - firstHour;
+                    minutes = lastMin - firstMin;
+                    if (minutes < 0){
+                        minutes+=60;
+                        hours--;
+                    }
+                    if (hours < 0){
+                        hours+=12;
+                    }
+
+                    bridgeField.setText("Duration: " + String.format("%02d", hours) + " hr(s) and " + String.format("%02d", minutes) + " min(s)");
+                    if(hours >= 3){
+                        numwind++;
+                        if(numwind == 1){
+                            emailClient();
+                        }
+                    }
+                }
+            }
+            if("function".equals(logType)){
+                if(f.isFile()){
+                    String logText = textArea.getText();
+                    String timeTag = "<TIME>";
+                    String testValue = "<TIME>xx:xx:xx</TIME>";
+                    String timeValue;
+                    ArrayList<String> timeMatrix = new ArrayList<>();
+                    int len = testValue.length();
+                    int index = logText.indexOf(timeTag);
+                    while ( index >= 0 ) {
+                        timeValue = logText.substring(index, index + len);
+                        timeMatrix.add(timeValue);
+                        index = logText.indexOf(timeTag, index+len);
+                    }
+                    int sizeof = timeMatrix.size();
+                    String firstTime = timeMatrix.get(0);
+                    String lastTime = timeMatrix.get(sizeof-1);
+                    int firstHour = Integer.parseInt(firstTime.substring(6, 8));
+                    int lastHour = Integer.parseInt(lastTime.substring(6, 8));
+                    int firstMin = Integer.parseInt(firstTime.substring(9, 11));
+                    int lastMin = Integer.parseInt(lastTime.substring(9, 11));
+                    hours = lastHour - firstHour;
+                    minutes = lastMin - firstMin;
+                    if (minutes < 0){
+                        minutes+=60;
+                        hours--;
+                    }
+                    bridgeField.setText("Duration: " + String.format("%02d", hours) + " hr(s) and " + String.format("%02d", minutes) + " min(s)");
+                }
+            }
+            if("prosight".equals(logType)){
+                if(f.isFile()){
+                    String logText = textArea.getText();
+                    String pattern0 = "Time=.*Class";
+                    Pattern timePattern = Pattern.compile(pattern0);
+                    Matcher timeMatcher = timePattern.matcher(logText);
+                    ArrayList<String> timeMatrix = new ArrayList<>();
+                    while(timeMatcher.find()){
+                        timeMatrix.add(timeMatcher.group());
+                    }
+                    int sizeof = timeMatrix.size();
+                    String firstTime = timeMatrix.get(0).replaceAll("[^0-9: ]", "");
+                    String lastTime = timeMatrix.get(sizeof-1).replaceAll("[^0-9: ]", "");
+                    int firsthour0 = firstTime.indexOf(" ");
+                    int firsthour1 = firstTime.indexOf(":");
+                    int lasthour0 = lastTime.indexOf(" ");
+                    int lasthour1 = lastTime.indexOf(":");
+                    int firstminute0 = firstTime.indexOf(":", firsthour1 + 1);
+                    int lastminute0 = lastTime.indexOf(":", lasthour1 + 1);
+                    int firstHour = Integer.parseInt(firstTime.substring(firsthour0, firsthour1).replaceAll("[^0-9]",""));
+                    int lastHour = Integer.parseInt(lastTime.substring(lasthour0, lasthour1).replaceAll("[^0-9]",""));
+                    int firstMin = Integer.parseInt(firstTime.substring(firsthour1, firstminute0).replaceAll("[^0-9]",""));
+                    int lastMin = Integer.parseInt(lastTime.substring(lasthour1, lastminute0).replaceAll("[^0-9]",""));
+                    hours = lastHour - firstHour;
+                    minutes = lastMin - firstMin;
+                    if (minutes < 0){
+                        minutes+=60;
+                        hours--;
+                    }
+                    bridgeField.setText("Duration: " + String.format("%02d", hours) + " hr(s) and " + String.format("%02d", minutes) + " min(s)");
+                }
+            }
+        } catch(HeadlessException | NumberFormatException e){
+            UIManager.put("OptionPane.okButtonText", "OK");
+            JOptionPane.showMessageDialog(null, "An error has occured while reading the log!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
- 
     
-   
+    
+    
+    public static void emailClient(){
+        try{
+            UIManager.put("OptionPane.okButtonText", "OK");
+            int result = JOptionPane.showConfirmDialog(null, "The duration of the PPM Bridge Log is over 3 hours!\nDo you want to send an email?", "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            if ((result == JOptionPane.OK_OPTION)){
+                ArrayList<String> monthMatrix = new ArrayList<>();
+                monthMatrix.add("January");
+                monthMatrix.add("February");
+                monthMatrix.add("March");
+                monthMatrix.add("April");
+                monthMatrix.add("May");
+                monthMatrix.add("June");
+                monthMatrix.add("July");
+                monthMatrix.add("August");
+                monthMatrix.add("September");
+                monthMatrix.add("October");
+                monthMatrix.add("November");
+                monthMatrix.add("December");
+
+                ArrayList<String> recepMatrix = new ArrayList<>();
+                recepMatrix.add("Cheryl.Crist@pepcoholdings.com");
+                recepMatrix.add("Kim.Deely@pepcoholdings.com");
+                recepMatrix.add("Edmund.Lynn@pepcoholdings.com");
+                recepMatrix.add("Elizabeth.May@pepcoholdings.com");
+                recepMatrix.add("Akash.Shah@pepcoholdings.com");
+                String subject = "Bridge Log Over 3 Hours";
+                String body = "Hello,\n\nThe Bridge Log Duration for the date of " + monthMatrix.get(month-1) + " " + day + ", " + year + ", is " + hours + " hour(s) and " + minutes
+                    + " minute(s). This duration is above the mark of 3 hours and should be looked at.\n\n\n"
+                    + "This is an automatically prepopulated email through the PPM Log Reader Application!\n"
+                    + "OPPM Log Reader Application\n" + "Pepco Holdings Inc.\n" + "A JAVA Application\n";
+                String uriStr = String.format("mailto:%s?subject=%s&body=%s",join(";", recepMatrix),
+                URLEncoder.encode(subject, "UTF-8").replace("+", "%20"), URLEncoder.encode(body, "UTF-8").replace("+", "%20"));
+                Desktop.getDesktop().browse(new URI(uriStr));
+            }
+        }catch (IOException | URISyntaxException ex) {
+            Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
+    
+    
+    
     private static void createAndShowIntervalGUI(){
         //Create and set up the window.
-        JFrame setIntervalFrame = new JFrame("Set Refresh Interval");
+        setIntervalFrame = new JFrame("Set Refresh Interval");
  
         
         //Add contents to the window.
         setIntervalFrame.add(new setIntervalFrame());
  
+        
         //Display the window.
         setIntervalFrame.pack();
         setIntervalFrame.setVisible(true);
@@ -413,7 +623,7 @@ public class LogReader extends JPanel implements ActionListener {
     
     private static void createAndShowDateMenuGUI(){
         //Create and set up the window.
-        JFrame setDateFrame = new JFrame("Set Date");
+        setDateFrame = new JFrame("Set Date");
  
         
         //Add contents to the window.
@@ -426,6 +636,56 @@ public class LogReader extends JPanel implements ActionListener {
     }
     
     
+    
+    private static void createAndShowLogMenuGUI(){
+        //Create and set up the window.
+        setLogType = new JFrame("Set Log Types");
+        
+        
+        //Add contents to the window.
+        setLogType.add(new setLogType());
+        
+        
+        //Display the window.
+        setLogType.pack();
+        setLogType.setVisible(true);
+    }
+    
+    
+    
+    private static void createAndShowFrontLogAnalysisGUI(){
+        //Create and set up the window.
+        frontLogAnalysis = new JFrame("Oracle Primavera Front End Log Analysis");
+        frontLogAnalysis.getContentPane().setSize(475,300);
+        
+        
+        //Add contents to the window.
+        frontLogAnalysis.add(new frontLogAnalysis());
+        
+        
+        //Display the window.
+        frontLogAnalysis.pack();
+        frontLogAnalysis.setVisible(true);
+    }
+    
+    
+    
+    private static void createAndShowBackLogAnalysisGUI(){
+        //Create and set up the window.
+        backLogAnalysis = new JFrame("Oracle Primavera Back End Log Analysis");
+        backLogAnalysis.getContentPane().setSize(475,300);
+        
+        
+        //Add contents to the window.
+        backLogAnalysis.add(new backLogAnalysis());
+        
+        
+        //Display the window.
+        backLogAnalysis.pack();
+        backLogAnalysis.setVisible(true);
+    }
+        
+        
 
     // Create the GUI and show it.  For thread safety, this method should be invoked from the
     // event dispatch thread.
@@ -433,9 +693,11 @@ public class LogReader extends JPanel implements ActionListener {
         //Create and set up the window.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        
         //Add contents to the window.
         frame.add(new LogReader());
  
+        
         //Display the window.
         frame.setVisible(true);
         frame.pack();
@@ -463,13 +725,6 @@ public class LogReader extends JPanel implements ActionListener {
         }
         window.setVisible(false);
         window.dispose();
-        UIManager.put("OptionPane.okButtonText", "OK");
-        JOptionPane.showMessageDialog(null, "Welcome to Primervera Portfolio Management Error Log Reader!" + newline + "For information on how to use the program, go to the file menu." + newline + "Press OK if ready to begin." ,"Welcome", JOptionPane.INFORMATION_MESSAGE);
-        try {
-            Thread.sleep(1200);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(LogReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     
@@ -477,10 +732,10 @@ public class LogReader extends JPanel implements ActionListener {
     // The main class which runs the entire code.
     public static void main(String[]args) throws MalformedURLException{
         //Schedule a job for the event dispatch thread:
-        //creating and showing this application's GUI.        
+        //creating and showing this application's GUI.
         splashScreen();
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Primavera Portfolio Management Log Reader " + versionNumber);
+            JFrame frame = new JFrame("Oracle Primavera Log Reader " + versionNumber);
             createAndShowGUI(frame);
         });
     }
